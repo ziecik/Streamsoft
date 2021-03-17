@@ -1,7 +1,6 @@
 package test;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.time.LocalDate;
 
 import org.testng.Assert;
@@ -12,6 +11,17 @@ import model.CurrencyCode;
 import util.CurrencyUtil;
 
 class CurrencyUtilTest {
+	
+	@Test(dataProvider = "testData")
+	void convertToPLNBasicTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
+		Assert.assertEquals(expectedValue, CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date));
+	}
+	
+	@Test(dataProvider = "testDataWeekend")
+	void convertToPLNOnWeekendTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
+		Assert.assertEquals(expectedValue, CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date));
+	}
+
 	
 	@DataProvider(name = "testData")
 	Object dataProvider() { 
@@ -56,17 +66,5 @@ class CurrencyUtilTest {
 	
 		return data;
 	}
-	
-	@Test(dataProvider = "testData")
-	void convertToPLNBasicTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
-		Assert.assertEquals(expectedValue, CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date));
-	}
-	
-	@Test(dataProvider = "testDataWeekend")
-	void convertToPLNonWeekendTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
-		Assert.assertEquals(expectedValue, CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date));
-	}
-
-	
 	
 }
