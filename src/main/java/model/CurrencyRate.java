@@ -1,13 +1,14 @@
 package model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class CurrencyRate {
 
 	private String currencyName;
 	private String code;
 	private BigDecimal rate;
-	
+	private LocalDate date;
 	
 	public String getCurrencyName() {
 		return currencyName;
@@ -27,11 +28,17 @@ public class CurrencyRate {
 	public void setRate(BigDecimal rate) {
 		this.rate = rate;
 	}
+	public LocalDate getDate() {
+		return date;
+	}
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
 	
 	@Override
 	public String toString() {
 		return code + 
-				":\t" + rate + "\t" + currencyName + 
+				":\t" + rate + "\t" +  date + "\t" + 
 				"\n"; 
 	}
 }

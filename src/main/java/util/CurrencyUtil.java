@@ -8,7 +8,9 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -97,7 +99,17 @@ public class CurrencyUtil{
 	
 	public static BigDecimal convertToPLN(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date) {
 		
-		String apiURL = "http://api.nbp.pl/api/exchangerates/rates/a/" + newCurrencyCode.toString().toLowerCase() + "/" + date +"?format=json";
+		String strDate = date.toString();
+		
+		if(date.equals(LocalDate.now()) && LocalDateTime.now().isBefore(LocalDate.now().atTime(12, 0))) {
+			strDate = "last/1";
+		} else if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			strDate = date.minusDays(2).toString();
+		} else if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {
+			strDate = date.minusDays(1).toString();
+		}
+		
+		String apiURL = "http://api.nbp.pl/api/exchangerates/rates/a/" + newCurrencyCode.toString().toLowerCase() + "/" + strDate +"?format=json";
 		
 		JSONParser jsonParser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
 		
