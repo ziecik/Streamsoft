@@ -7,20 +7,21 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import model.CurrencyCode;
-import util.CurrencyUtil;
+import pl.streamsoft.model.CurrencyCode;
+import pl.streamsoft.service.CurrencyRateNBPService;
+import pl.streamsoft.util.CurrencyUtil;
 
 class CurrencyUtilTest {
 	
-//	@Test(dataProvider = "testData")
-//	void convertToPLNBasicTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
-//		Assert.assertEquals(expectedValue, CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date));
-//	}
-//	
-//	@Test(dataProvider = "testDataWeekend")
-//	void convertToPLNOnWeekendTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
-//		Assert.assertEquals(expectedValue, CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date));
-//	}
+	@Test(dataProvider = "testData")
+	void convertToPLNBasicTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
+		Assert.assertEquals(CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date, new CurrencyRateNBPService()), expectedValue);
+	}
+	
+	@Test(dataProvider = "testDataWeekend")
+	void convertToPLNOnWeekendTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
+		Assert.assertEquals(CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date, new CurrencyRateNBPService()), expectedValue);
+	}
 
 	
 	@DataProvider(name = "testData")
@@ -30,17 +31,17 @@ class CurrencyUtilTest {
 		data[0][0] = new BigDecimal("1000");
 		data[0][1] = CurrencyCode.USD; 
 		data[0][2] = LocalDate.parse("2021-03-16");
-		data[0][3] = new BigDecimal("3851.9").setScale(2);
+		data[0][3] = new BigDecimal("3851.90");
 		
 		data[1][0] = new BigDecimal("213");
 		data[1][1] = CurrencyCode.JPY;
 		data[1][2] = LocalDate.parse("2019-10-10");
-		data[1][3] = new BigDecimal("7.77");
+		data[1][3] = new BigDecimal("7.78");
 		
 		data[2][0] = new BigDecimal("1275.35");  
 		data[2][1] = CurrencyCode.HUF;
 		data[2][2] = LocalDate.parse("2012-12-12");
-		data[2][3] = new BigDecimal("18.47");
+		data[2][3] = new BigDecimal("18.48");
 	
 		return data;
 	}

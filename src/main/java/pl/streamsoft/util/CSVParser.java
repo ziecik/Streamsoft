@@ -1,4 +1,4 @@
-package util;
+package pl.streamsoft.util;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,8 +11,8 @@ import java.util.List;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
-import model.CurrencyCode;
-import model.CurrencyRate;
+import pl.streamsoft.model.CurrencyCode;
+import pl.streamsoft.model.CurrencyRate;
 
 public class CSVParser {
 

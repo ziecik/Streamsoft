@@ -1,9 +1,9 @@
-package service;
+package pl.streamsoft.service;
 
 import java.time.LocalDate;
 
-import model.CurrencyCode;
-import model.CurrencyRate;
+import pl.streamsoft.model.CurrencyCode;
+import pl.streamsoft.model.CurrencyRate;
 
 public class CurrencyRateCSVFIleServicea implements CurrencyRateService {
 

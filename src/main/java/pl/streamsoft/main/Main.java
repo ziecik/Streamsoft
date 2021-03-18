@@ -1,11 +1,11 @@
-package main;
+package pl.streamsoft.main;
 
 
 import java.util.List;
 
-import model.CurrencyRate;
-import service.SaleDocumentService;
-import util.CSVParser;
+import pl.streamsoft.model.CurrencyRate;
+import pl.streamsoft.service.SaleDocumentService;
+import pl.streamsoft.util.CSVParser;
 
 public class Main {
 
