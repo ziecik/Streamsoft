@@ -9,6 +9,6 @@ import util.CurrencyUtil;
 public class SaleDocumentService {
 	
 	public void insert() {
-		CurrencyUtil.convertToPLN(new BigDecimal("1000"), CurrencyCode.KRW, LocalDate.now(), new CurrencyRateNBPService());
+		BigDecimal valeInPLN = CurrencyUtil.convertToPLN(new BigDecimal("1000"), CurrencyCode.EUR, LocalDate.parse("2921-03-15"), new CurrencyRateNBPService());
 	}
 }

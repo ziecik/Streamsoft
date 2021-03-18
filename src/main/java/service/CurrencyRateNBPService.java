@@ -11,6 +11,9 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
+import org.apache.commons.collections.FunctorException;
+
+import exception.FutureDataException;
 import model.CurrencyCode;
 import model.CurrencyRate;
 import net.minidev.json.JSONArray;
@@ -22,32 +25,35 @@ public class CurrencyRateNBPService implements CurrencyRateService {
 
 	@Override
 	public CurrencyRate getCurrencyRate(CurrencyCode CurrencyCode, LocalDate localDate) {
-		
+
 		String apiURL = "http://api.nbp.pl/api/exchangerates/rates/a/" + CurrencyCode.toString().toLowerCase() + "/"
 				+ localDate.toString() + "?format=json";
 
-		
-		int responseCode;
-		CurrencyRate result = null;
+		String json = getCurrencyRateJSONWihtProperDate(CurrencyCode, localDate, apiURL);
+		CurrencyRate currencyRate = parseJSONToCurrencyRateObject(CurrencyCode, localDate, json);
 
+		return currencyRate;
+	}
+
+	private String getCurrencyRateJSONWihtProperDate(CurrencyCode CurrencyCode, LocalDate localDate, String apiURL) {
+		int responseCode;
+		String inputLine = null;
+		URLConnection connection;
+		
+		if(isDataValid(localDate))
 		try {
-			URL url = new URL(apiURL);
-			URLConnection connection = url.openConnection();
-			HttpURLConnection httpURLConnection = (HttpURLConnection) connection;
-			httpURLConnection.setRequestMethod("GET");
-			responseCode = httpURLConnection.getResponseCode();
-			System.out.println(responseCode);
-			
+			do {
+				URL url = new URL(apiURL);
+				connection = url.openConnection();
+				HttpURLConnection httpURLConnection = (HttpURLConnection) connection;
+				httpURLConnection.setRequestMethod("GET");
+				responseCode = httpURLConnection.getResponseCode();
+				localDate = localDate.minusDays(1);
+			} while (responseCode != 200);
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+			inputLine = bufferedReader.readLine();
 
-			String inputLine= bufferedReader.readLine();
-			if ((inputLine ) != null) {
-				result = parseJSONToCurrencyRateObject(CurrencyCode, localDate, inputLine);
-			}
-
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,39 +61,41 @@ public class CurrencyRateNBPService implements CurrencyRateService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		return result;
-	}
-
-
-	private CurrencyRate parseJSONToCurrencyRateObject(CurrencyCode CurrencyCode, LocalDate localDate, String inputLine)
-			throws ParseException {
-		CurrencyRate result;
-		JSONParser jsonParser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
-		JSONObject exchangeRate = (JSONObject) jsonParser.parse(inputLine);
-		JSONArray rates = (JSONArray) exchangeRate.get("rates");
-		JSONObject rate = (JSONObject) rates.get(0);
-		BigDecimal rateValue = new BigDecimal(rate.getAsString("mid").toString());
-		String currencyName = (String) ((JSONObject) rate).get("currency");
-
-		result = new CurrencyRate(currencyName, CurrencyCode, rateValue, localDate);
+		else {
+			System.out.println("Futuredata - rates not known");
+		}
 		
+		return inputLine;
+	}
+
+	private CurrencyRate parseJSONToCurrencyRateObject(CurrencyCode CurrencyCode, LocalDate localDate,
+			String inputLine) {
+		
+		CurrencyRate result = null;
+		JSONParser jsonParser = new JSONParser(JSONParser.DEFAULT_PERMISSIVE_MODE);
+		JSONObject exchangeRate;
+
+		try {
+			exchangeRate = (JSONObject) jsonParser.parse(inputLine);
+			JSONArray rates = (JSONArray) exchangeRate.get("rates");
+			JSONObject rate = (JSONObject) rates.get(0);
+			BigDecimal rateValue = new BigDecimal(rate.getAsString("mid").toString());
+			String currencyName = (String) ((JSONObject) rate).get("currency");
+			result = new CurrencyRate(currencyName, CurrencyCode, rateValue, localDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return result;
 	}
-
 	
-	private static LocalDate validatekDate(LocalDate localDate) throws IOException {
-		int responseCode;
-		do {
-			URL url = new URL("http://api.nbp.pl/api/exchangerates/tables/a/" + localDate.toString());
-			URLConnection connection = url.openConnection();
-			HttpURLConnection httpURLConnection = (HttpURLConnection) connection;
-			httpURLConnection.setRequestMethod("GET");
-			responseCode = httpURLConnection.getResponseCode();
-			localDate = localDate.minusDays(1);
-		} while (responseCode == 200);
-
-		return localDate;
+	private boolean isDataValid(LocalDate date) {
+		if(date.isBefore(LocalDate.now())) {
+			return true;
+		} else {
+			throw new FutureDataException("There is no future currency rate");
+		}
 	}
-	
+
 }
