@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +15,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import pl.streamsoft.exception.CurrencyRateServiceUnavailableException;
+import pl.streamsoft.exception.FutureDateException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 
@@ -23,10 +23,12 @@ public class CurrencyRateNBPService implements CurrencyRateService {
 
 	@Override
 	public CurrencyRate getCurrencyRate(CurrencyCode CurrencyCode, LocalDate localDate) throws IOException {
+		
 		String json = getCurrencyRateJSONWihtProperDate(CurrencyCode, localDate);
 		CurrencyRate currencyRate = parseJSONToCurrencyRateObject(CurrencyCode, localDate, json);
 		return currencyRate;
 	}
+
 
 	private String getCurrencyRateJSONWihtProperDate(CurrencyCode CurrencyCode, LocalDate localDate) throws IOException {
 		String inputLine = null;
