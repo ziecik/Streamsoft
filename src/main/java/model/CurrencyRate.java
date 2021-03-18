@@ -9,36 +9,52 @@ public class CurrencyRate {
 	private CurrencyCode code;
 	private BigDecimal rateValue;
 	private LocalDate localDate;
-	
+
+	public CurrencyRate() {
+
+	}
+
+	public CurrencyRate(String currencyName, CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
+		this.currencyName = currencyName;
+		this.code = code;
+		this.rateValue = rateValue;
+		this.localDate = localDate;
+	}
+
 	public String getCurrencyName() {
 		return currencyName;
 	}
+
 	public void setCurrencyName(String currencyName) {
 		this.currencyName = currencyName;
 	}
+
 	public CurrencyCode getCode() {
 		return code;
 	}
+
 	public void setCode(CurrencyCode code) {
 		this.code = code;
 	}
+
 	public BigDecimal getRateValue() {
 		return rateValue;
 	}
+
 	public void setRateValue(BigDecimal rateValue) {
 		this.rateValue = rateValue;
 	}
+
 	public LocalDate getLocalDate() {
 		return localDate;
 	}
+
 	public void setLocalDate(LocalDate localDate) {
 		this.localDate = localDate;
 	}
-	
+
 	@Override
 	public String toString() {
-		return code + 
-				":\t" + rateValue + "\t" + localDate + "\t" +  currencyName +
-				"\n"; 
+		return code + "\t" + rateValue + "\t" + localDate + "\t" + currencyName + "\n";
 	}
 }
