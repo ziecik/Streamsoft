@@ -53,8 +53,4 @@ public class CurrencyRate {
 		this.localDate = localDate;
 	}
 
-	@Override
-	public String toString() {
-		return code + "\t" + rateValue + "\t" + localDate + "\t" + currencyName + "\n";
-	}
 }

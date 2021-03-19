@@ -9,12 +9,13 @@ import pl.streamsoft.exception.CurrencyRateServiceUnavailableException;
 import pl.streamsoft.exception.FutureDateException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
+import pl.streamsoft.service.CurrencyRateService;
 import pl.streamsoft.service.CurrencyRatesProvider;
 
 public class CurrencyUtil {
 
 	public static BigDecimal convertToPLN(BigDecimal valueToConvert, CurrencyCode currencyCode, LocalDate localDate,
-			CurrencyRatesProvider currencyRatesProvider) throws FutureDateException {
+			CurrencyRatesProvider currencyRatesProvider) {
 
 		CurrencyRate currencyRate;
 		BigDecimal result = null;
@@ -23,7 +24,8 @@ public class CurrencyUtil {
 			throw new FutureDateException();
 		} else {
 			try {
-				currencyRate = currencyRatesProvider.getCurrencyRateService().getCurrencyRate(currencyCode,
+				CurrencyRateService currencyRateService = currencyRatesProvider.getCurrencyRateService();
+				currencyRate = currencyRateService.getCurrencyRate(currencyCode,
 						localDate);
 				BigDecimal rateValue = currencyRate.getRateValue();
 				result = rateValue.multiply(valueToConvert).setScale(2, RoundingMode.HALF_DOWN);
