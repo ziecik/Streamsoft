@@ -15,7 +15,6 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import pl.streamsoft.exception.CurrencyRateServiceUnavailableException;
-import pl.streamsoft.exception.FutureDateException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 

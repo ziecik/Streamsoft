@@ -13,16 +13,17 @@ import pl.streamsoft.service.CurrencyRatesProvider;
 
 public class CurrencyUtil {
 
-	public static BigDecimal convertToPLN(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate localDate,
+	public static BigDecimal convertToPLN(BigDecimal valueToConvert, CurrencyCode currencyCode, LocalDate localDate,
 			CurrencyRatesProvider currencyRatesProvider) throws FutureDateException {
 
 		CurrencyRate currencyRate;
 		BigDecimal result = null;
+		
 		if (!DateValidator.isDateValid(localDate)) {
 			throw new FutureDateException();
 		} else {
 			try {
-				currencyRate = currencyRatesProvider.getCurrencyRateService().getCurrencyRate(newCurrencyCode,
+				currencyRate = currencyRatesProvider.getCurrencyRateService().getCurrencyRate(currencyCode,
 						localDate);
 				BigDecimal rateValue = currencyRate.getRateValue();
 				result = rateValue.multiply(valueToConvert).setScale(2, RoundingMode.HALF_DOWN);

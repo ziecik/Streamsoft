@@ -7,6 +7,8 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import pl.streamsoft.exception.CurrencyRateServiceUnavailableException;
+import pl.streamsoft.exception.FutureDateException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.service.CurrencyRatesProvider;
 import pl.streamsoft.util.CurrencyUtil;
@@ -19,10 +21,25 @@ class CurrencyUtilTest {
 	}
 	
 	@Test(dataProvider = "testDataWeekend")
-	void convertToPLNOnWeekendByNBPServiceTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
+	void convertToPLNByNBPServiceOnWeekendTest(BigDecimal valueToConvert, CurrencyCode newCurrencyCode, LocalDate date, BigDecimal expectedValue) {
 		Assert.assertEquals(CurrencyUtil.convertToPLN(valueToConvert, newCurrencyCode, date, CurrencyRatesProvider.NBP), expectedValue);
 	}
 
+	
+	@Test(expectedExceptions = CurrencyRateServiceUnavailableException.class)
+	void throwCurrencyRateServiceUnavaibleExceptionForCurrencyRateCSVFileServiceTest() {
+		CurrencyUtil.convertToPLN(new BigDecimal("1000"), CurrencyCode.EUR, LocalDate.parse("2020-03-19"), CurrencyRatesProvider.CSV_FILE);
+	}
+	
+	@Test(expectedExceptions = FutureDateException.class)
+	void throwFutureDateExceptionForCurrencyRateCSVFileServiceTest() {
+		CurrencyUtil.convertToPLN(new BigDecimal("1000"), CurrencyCode.BGN, LocalDate.now().plusDays(2), CurrencyRatesProvider.CSV_FILE);
+	}
+	
+	@Test(expectedExceptions = FutureDateException.class)
+	void throwFutureDateExceptionForForCurrencyRateNBPServiceTest() {
+		CurrencyUtil.convertToPLN(new BigDecimal("1000"), CurrencyCode.EUR, LocalDate.now().plusYears(3), CurrencyRatesProvider.CSV_FILE);
+	}
 	
 	@DataProvider(name = "testData")
 	Object dataProvider() { 
