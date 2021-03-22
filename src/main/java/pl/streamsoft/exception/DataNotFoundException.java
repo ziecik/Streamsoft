@@ -6,4 +6,9 @@ public class DataNotFoundException extends RuntimeException {
 		super("Choosen CurrencyRateService is not available right now", cause);
 	}
 
+	public DataNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+	
 }

@@ -39,16 +39,16 @@ public class CurrencyConverter {
 		while (true) {
 			try {
 				SimpleCurrencyRate simpleCurrencyRate = currencyRateService.getCurrencyRate(currencyCode, localDate);
-				if (simpleCurrencyRate != null) {
+				if (simpleCurrencyRate != null) {	//	null value from currencyRateService.getCurrencyRate
 					return simpleCurrencyRate;
 				} else if (attempts-- == 0) {
-					throw new DataNotFoundException(new IOException());
+					throw new DataNotFoundException("Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]", new IOException());
 				}
 
 			} catch (IOException e) {
 				localDate = localDate.minusDays(1);
 				if (attempts-- == 0)
-					throw new DataNotFoundException(e);
+					throw new DataNotFoundException("Choosen CurrencyRateService is not available right now. [5 attempts were made]", e);
 			}
 		}
 
