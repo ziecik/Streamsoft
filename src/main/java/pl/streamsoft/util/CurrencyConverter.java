@@ -34,7 +34,7 @@ public class CurrencyConverter {
 
 	private SimpleCurrencyRate getRate(CurrencyRateService currencyRateService, CurrencyCode currencyCode,
 			LocalDate localDate) {
-		int attempts = 5;
+		int attempts = 4;
 
 		while (true) {
 			try {

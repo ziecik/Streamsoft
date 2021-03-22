@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testng.AssertJUnit;
@@ -40,19 +41,26 @@ public class CurrencyConverterTest {
 		assertThat(thrown).hasMessage("Currency rate on this day is not announced yet");
 	}
 
-	@Mock
+	@Mock(answer = Answers.RETURNS_SELF)
 	CurrencyRateNBPService mockedCurrencyRateService = Mockito.mock(CurrencyRateNBPService.class);
 
 	@Test
 	public void getRateDataDeliverNullNotFoundExceptionTest() throws IOException {
 
 //		given:
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-05")))
+				.thenReturn(null);
 		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
 				.thenReturn(null);
-
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-03")))
+				.thenReturn(null);
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-02")))
+				.thenReturn(null);
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-01")))
+				.thenReturn(null);
 //		when:
 		Throwable thrown = catchThrowable(() -> new CurrencyConverter(mockedCurrencyRateService)
-				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
+				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-05")));
 
 //		then:
 		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
@@ -61,20 +69,28 @@ public class CurrencyConverterTest {
 
 	}
 
-///////
-//	@Test
-//	public void getRateDataNotFoundExceptionTest() throws IOException {
-////		given:
-//		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
-//				.thenThrow(IOException.class);
-////		when:
-//		Throwable thrown = catchThrowable(() -> new CurrencyConverter(mockedCurrencyRateService)
-//				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
-//
-////		then:
-//		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
-//		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
-//	}
+/////
+	@Test
+	public void getRateDataNotFoundExceptionTest() throws IOException {
+//		given:
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-05")))
+				.thenThrow(new IOException());
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
+				.thenThrow(new IOException());
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-03")))
+				.thenThrow(new IOException());
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-02")))
+				.thenThrow(new IOException());
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-01")))
+				.thenThrow(new IOException());
+//		when:
+		Throwable thrown = catchThrowable(() -> new CurrencyConverter(mockedCurrencyRateService)
+				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-05")));
+
+//		then:
+		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
+		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
+	}
 
 	@Test
 	public void convertToPLNOnSundayTest() {
@@ -131,38 +147,38 @@ public class CurrencyConverterTest {
 		AssertJUnit.assertEquals(valueInPLNOnEpiphanyWednesday, valueInPLNOnTuesday);
 	}
 
-	@Test
-	public void getRateDataNotFoundExceptionTest2() {
-//		given:
-		CurrencyRateService currencyRateService = new CurrencyRateCSVFIleService();
-		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
-		// localDate) throws IOException
-
-//		when:
-		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
-				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
-
-//		then:
-		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
-		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
-	}
-
-	@Test
-	public void getRateDataDeliverNullNotFoundExceptionTest2() {
-
-//		given:
-		CurrencyRateService currencyRateService = new ReturnNullService();
-		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
-		// localDate) return null
-
-//		when:
-		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
-				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
-
-//		then:
-		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
-		assertThat(thrown).hasMessage(
-				"Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]");
-
-	}
+//	@Test
+//	public void getRateDataNotFoundExceptionTest2() {
+////		given:
+//		CurrencyRateService currencyRateService = new CurrencyRateCSVFIleService();
+//		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
+//		// localDate) throws IOException
+//
+////		when:
+//		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
+//				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
+//
+////		then:
+//		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
+//		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
+//	}
+//
+//	@Test
+//	public void getRateDataDeliverNullNotFoundExceptionTest2() {
+//
+////		given:
+//		CurrencyRateService currencyRateService = new ReturnNullService();
+//		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
+//		// localDate) return null
+//
+////		when:
+//		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
+//				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
+//
+////		then:
+//		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
+//		assertThat(thrown).hasMessage(
+//				"Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]");
+//
+//	}
 }
