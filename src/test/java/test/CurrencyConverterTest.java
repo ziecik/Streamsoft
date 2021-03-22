@@ -3,9 +3,12 @@ package test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 
@@ -13,6 +16,7 @@ import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.exception.FutureDateException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.service.CurrencyRateCSVFIleService;
+import pl.streamsoft.service.CurrencyRateNBPService;
 import pl.streamsoft.service.CurrencyRateService;
 import pl.streamsoft.service.ReturnNullService;
 import pl.streamsoft.util.CurrencyConverter;
@@ -36,16 +40,18 @@ public class CurrencyConverterTest {
 		assertThat(thrown).hasMessage("Currency rate on this day is not announced yet");
 	}
 
+	@Mock
+	CurrencyRateNBPService mockedCurrencyRateService = Mockito.mock(CurrencyRateNBPService.class);
+
 	@Test
-	public void getRateDataDeliverNullNotFoundExceptionTest() {
+	public void getRateDataDeliverNullNotFoundExceptionTest() throws IOException {
 
 //		given:
-		CurrencyRateService currencyRateService = new ReturnNullService();
-		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
-		// localDate) return null
+		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
+				.thenReturn(null);
 
 //		when:
-		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
+		Throwable thrown = catchThrowable(() -> new CurrencyConverter(mockedCurrencyRateService)
 				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
 
 //		then:
@@ -55,41 +61,54 @@ public class CurrencyConverterTest {
 
 	}
 
-	@Test
-	public void getRateDataNotFoundExceptionTest() {
-
-//		given:
-		CurrencyRateService currencyRateService = new CurrencyRateCSVFIleService();
-		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
-		// localDate) throws IOException
-
-//		when:
-		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
-				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
-
-//		then:
-		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
-		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
-	}
+///////
+//	@Test
+//	public void getRateDataNotFoundExceptionTest() throws IOException {
+////		given:
+//		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
+//				.thenThrow(IOException.class);
+////		when:
+//		Throwable thrown = catchThrowable(() -> new CurrencyConverter(mockedCurrencyRateService)
+//				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
+//
+////		then:
+//		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
+//		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
+//	}
 
 	@Test
-	public void convertToPLNOnWeekendTest() {
+	public void convertToPLNOnSundayTest() {
 
 //		given:
 		CurrencyConverter currencyConverter = new CurrencyConverter();
 		BigDecimal valueToConvert = new BigDecimal("1500.99");
 		CurrencyCode euro = CurrencyCode.EUR;
 		LocalDate sun = LocalDate.parse("2021-03-21");
-		LocalDate sat = LocalDate.parse("2021-03-20");
 		LocalDate fri = LocalDate.parse("2021-03-19");
 
 //		when:
 		BigDecimal valueInPLNOnSunday = currencyConverter.convertToPLN(valueToConvert, euro, sun);
-		BigDecimal valueInPLNOnSaturady = currencyConverter.convertToPLN(valueToConvert, euro, sat);
 		BigDecimal valueInPLNOnFriday = currencyConverter.convertToPLN(valueToConvert, euro, fri);
 
 //		then:
 		AssertJUnit.assertEquals(valueInPLNOnSunday, valueInPLNOnFriday);
+	}
+
+	@Test
+	public void convertToPLNOnSaturdayTest() {
+
+//		given:
+		CurrencyConverter currencyConverter = new CurrencyConverter();
+		BigDecimal valueToConvert = new BigDecimal("1500.99");
+		CurrencyCode euro = CurrencyCode.EUR;
+		LocalDate sat = LocalDate.parse("2021-03-20");
+		LocalDate fri = LocalDate.parse("2021-03-19");
+
+//		when:
+		BigDecimal valueInPLNOnSaturady = currencyConverter.convertToPLN(valueToConvert, euro, sat);
+		BigDecimal valueInPLNOnFriday = currencyConverter.convertToPLN(valueToConvert, euro, fri);
+
+//		then:
 		AssertJUnit.assertEquals(valueInPLNOnSaturady, valueInPLNOnFriday);
 	}
 
@@ -112,4 +131,38 @@ public class CurrencyConverterTest {
 		AssertJUnit.assertEquals(valueInPLNOnEpiphanyWednesday, valueInPLNOnTuesday);
 	}
 
+	@Test
+	public void getRateDataNotFoundExceptionTest2() {
+//		given:
+		CurrencyRateService currencyRateService = new CurrencyRateCSVFIleService();
+		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
+		// localDate) throws IOException
+
+//		when:
+		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
+				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
+
+//		then:
+		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
+		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
+	}
+
+	@Test
+	public void getRateDataDeliverNullNotFoundExceptionTest2() {
+
+//		given:
+		CurrencyRateService currencyRateService = new ReturnNullService();
+		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
+		// localDate) return null
+
+//		when:
+		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
+				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
+
+//		then:
+		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
+		assertThat(thrown).hasMessage(
+				"Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]");
+
+	}
 }

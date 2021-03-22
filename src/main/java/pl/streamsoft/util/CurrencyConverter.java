@@ -39,7 +39,7 @@ public class CurrencyConverter {
 		while (true) {
 			try {
 				SimpleCurrencyRate simpleCurrencyRate = currencyRateService.getCurrencyRate(currencyCode, localDate);
-				if (simpleCurrencyRate != null) {	//	null value from currencyRateService.getCurrencyRate
+				if (simpleCurrencyRate instanceof SimpleCurrencyRate) {	//	null value from currencyRateService.getCurrencyRate
 					return simpleCurrencyRate;
 				} else if (attempts-- == 0) {
 					throw new DataNotFoundException("Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]", new IOException());
