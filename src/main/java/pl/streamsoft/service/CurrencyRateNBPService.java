@@ -24,6 +24,7 @@ public class CurrencyRateNBPService implements CurrencyRateService {
 
 		String json = getCurrencyRateJSON(CurrencyCode, localDate);
 		CurrencyRate currencyRate = parseJSONToCurrencyRateObject(CurrencyCode, localDate, json);
+	
 		return currencyRate;
 	}
 
@@ -34,7 +35,7 @@ public class CurrencyRateNBPService implements CurrencyRateService {
 				new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
 		String inputLine = bufferedReader.readLine();
 		bufferedReader.close();
-
+		
 		return inputLine;
 
 	}

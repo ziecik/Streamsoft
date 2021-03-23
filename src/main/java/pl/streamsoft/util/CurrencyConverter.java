@@ -14,6 +14,7 @@ import pl.streamsoft.service.CurrencyRateService;
 public class CurrencyConverter {
 	private CurrencyRateService currencyRateService;
 
+	
 	public CurrencyConverter() {
 		this.currencyRateService = new CurrencyRateNBPService();
 	}
@@ -22,6 +23,7 @@ public class CurrencyConverter {
 		this.currencyRateService = currencyRateService;
 	}
 
+	
 	public BigDecimal convertToPLN(BigDecimal valueToConvert, CurrencyCode currencyCode, LocalDate localDate) {
 
 		DateValidator.validateDate(localDate);
@@ -34,20 +36,20 @@ public class CurrencyConverter {
 
 	private SimpleCurrencyRate getRate(CurrencyRateService currencyRateService, CurrencyCode currencyCode,
 			LocalDate localDate) {
-		int attempts = 4;
+		int attempts = 5;
 
 		while (true) {
 			try {
 				SimpleCurrencyRate simpleCurrencyRate = currencyRateService.getCurrencyRate(currencyCode, localDate);
 				if (simpleCurrencyRate instanceof SimpleCurrencyRate) {	//	null value from currencyRateService.getCurrencyRate
 					return simpleCurrencyRate;
-				} else if (attempts-- == 0) {
+				} else if (--attempts == 0) {
 					throw new DataNotFoundException("Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]", new IOException());
 				}
 
 			} catch (IOException e) {
 				localDate = localDate.minusDays(1);
-				if (attempts-- == 0)
+				if (--attempts == 0)
 					throw new DataNotFoundException("Choosen CurrencyRateService is not available right now. [5 attempts were made]", e);
 			}
 		}

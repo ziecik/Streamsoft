@@ -11,6 +11,5 @@ public class SaleDocumentService {
 	public void insert() {
 		BigDecimal valeInPLN = new CurrencyConverter().convertToPLN(new BigDecimal("1000"), CurrencyCode.EUR,
 				LocalDate.parse("2020-12-04"));
-		System.out.print(valeInPLN);
 	}
 }

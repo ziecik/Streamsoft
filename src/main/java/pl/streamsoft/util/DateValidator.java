@@ -5,9 +5,6 @@ import java.time.LocalDate;
 import pl.streamsoft.exception.FutureDateException;
 
 public class DateValidator {
-//	public static boolean isDateValid(LocalDate localDate) {
-//		return localDate.isBefore(LocalDate.now());
-//	}
 	
 	public static void validateDate(LocalDate localDate) {
 		if(localDate.isAfter(LocalDate.now()))

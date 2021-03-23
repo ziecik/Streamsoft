@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testng.AssertJUnit;
@@ -16,10 +15,7 @@ import org.testng.annotations.Test;
 import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.exception.FutureDateException;
 import pl.streamsoft.model.CurrencyCode;
-import pl.streamsoft.service.CurrencyRateCSVFIleService;
 import pl.streamsoft.service.CurrencyRateNBPService;
-import pl.streamsoft.service.CurrencyRateService;
-import pl.streamsoft.service.ReturnNullService;
 import pl.streamsoft.util.CurrencyConverter;
 import pl.streamsoft.util.DateValidator;
 
@@ -41,7 +37,7 @@ public class CurrencyConverterTest {
 		assertThat(thrown).hasMessage("Currency rate on this day is not announced yet");
 	}
 
-	@Mock(answer = Answers.RETURNS_SELF)
+	@Mock
 	CurrencyRateNBPService mockedCurrencyRateService = Mockito.mock(CurrencyRateNBPService.class);
 
 	@Test
@@ -90,6 +86,7 @@ public class CurrencyConverterTest {
 //		then:
 		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
 		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
+		assertThat(thrown).hasCause(new IOException());
 	}
 
 	@Test
@@ -147,38 +144,4 @@ public class CurrencyConverterTest {
 		AssertJUnit.assertEquals(valueInPLNOnEpiphanyWednesday, valueInPLNOnTuesday);
 	}
 
-//	@Test
-//	public void getRateDataNotFoundExceptionTest2() {
-////		given:
-//		CurrencyRateService currencyRateService = new CurrencyRateCSVFIleService();
-//		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
-//		// localDate) throws IOException
-//
-////		when:
-//		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
-//				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
-//
-////		then:
-//		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
-//		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
-//	}
-//
-//	@Test
-//	public void getRateDataDeliverNullNotFoundExceptionTest2() {
-//
-////		given:
-//		CurrencyRateService currencyRateService = new ReturnNullService();
-//		// currencyRateService. getCurrencyRate(CurrencyCode newCurrencyCode,LocalDate
-//		// localDate) return null
-//
-////		when:
-//		Throwable thrown = catchThrowable(() -> new CurrencyConverter(currencyRateService)
-//				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-04")));
-//
-////		then:
-//		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
-//		assertThat(thrown).hasMessage(
-//				"Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]");
-//
-//	}
 }
