@@ -7,7 +7,7 @@ public class CurrencyRate {
     private String currencyName;
     private CurrencyCode code;
     private BigDecimal rateValue;
-    private LocalDate localDate;
+    private LocalDate dateOfAnnouncedRate;
 
     public CurrencyRate() {
     }
@@ -16,7 +16,7 @@ public class CurrencyRate {
 	this.currencyName = currencyName;
 	this.code = code;
 	this.rateValue = rateValue;
-	this.localDate = localDate;
+	this.dateOfAnnouncedRate = localDate;
     }
 
     public CurrencyCode getCode() {
@@ -43,12 +43,12 @@ public class CurrencyRate {
 	this.currencyName = currencyName;
     }
 
-    public LocalDate getLocalDate() {
-	return localDate;
+    public LocalDate getDateOfAnnouncedRate() {
+	return dateOfAnnouncedRate;
     }
 
-    public void setLocalDate(LocalDate localDate) {
-	this.localDate = localDate;
+    public void setDateOfAnnouncedRate(LocalDate localDate) {
+	this.dateOfAnnouncedRate = localDate;
     }
 
 }

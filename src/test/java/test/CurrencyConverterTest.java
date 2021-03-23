@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
@@ -15,47 +14,30 @@ import org.testng.annotations.Test;
 import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.exception.FutureDateException;
 import pl.streamsoft.model.CurrencyCode;
-import pl.streamsoft.service.CurrencyRateNBPService;
 import pl.streamsoft.util.CurrencyConverter;
 import pl.streamsoft.util.DateValidator;
 
 public class CurrencyConverterTest {
 
-	@Test
-	public void dataValidatorDateExceptionTest() {
-		LocalDate localDate;
-		Throwable thrown;
+	
 
-//		given: 
-		localDate = LocalDate.now().plusDays(1);
-
-//		when: 
-		thrown = catchThrowable(() -> DateValidator.validateDate(localDate));
-
-//		then: 
-		assertThat(thrown).isInstanceOf(FutureDateException.class);
-		assertThat(thrown).hasMessage("Currency rate on this day is not announced yet");
-	}
-
-	@Mock
-	CurrencyRateNBPService mockedCurrencyRateService = Mockito.mock(CurrencyRateNBPService.class);
 
 	@Test
 	public void getRateDataDeliverNullNotFoundExceptionTest() throws IOException {
 
 //		given:
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-05")))
+		Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-05")))
 				.thenReturn(null);
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
+		Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
 				.thenReturn(null);
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-03")))
+		Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-03")))
 				.thenReturn(null);
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-02")))
+		Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-02")))
 				.thenReturn(null);
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-01")))
+		Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-01")))
 				.thenReturn(null);
 //		when:
-		Throwable thrown = catchThrowable(() -> new CurrencyConverter(mockedCurrencyRateService)
+		Throwable thrown = catchThrowable(() -> new CurrencyConverter(data.mockedCurrencyRateService)
 				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-05")));
 
 //		then:
@@ -69,24 +51,28 @@ public class CurrencyConverterTest {
 	@Test
 	public void getRateDataNotFoundExceptionTest() throws IOException {
 //		given:
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-05")))
-				.thenThrow(new IOException());
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
-				.thenThrow(new IOException());
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-03")))
-				.thenThrow(new IOException());
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-02")))
-				.thenThrow(new IOException());
-		Mockito.when(mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-01")))
-				.thenThrow(new IOException());
+		setMissingOrReturnData();
 //		when:
-		Throwable thrown = catchThrowable(() -> new CurrencyConverter(mockedCurrencyRateService)
+		Throwable thrown = catchThrowable(() -> new CurrencyConverter(data.mockedCurrencyRateService)
 				.convertToPLN(new BigDecimal("367.58"), CurrencyCode.EUR, LocalDate.parse("2020-12-05")));
 
 //		then:
 		assertThat(thrown).isInstanceOf(DataNotFoundException.class);
 		assertThat(thrown).hasMessage("Choosen CurrencyRateService is not available right now. [5 attempts were made]");
 		assertThat(thrown).hasCause(new IOException());
+	}
+
+	private void setMissingOrReturnData() throws IOException {
+	    Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-05")))
+	    		.thenThrow(new IOException());
+	    Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-04")))
+	    		.thenThrow(new IOException());
+	    Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-03")))
+	    		.thenThrow(new IOException());
+	    Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-02")))
+	    		.thenThrow(new IOException());
+	    Mockito.when(data.mockedCurrencyRateService.getCurrencyRate(CurrencyCode.EUR, LocalDate.parse("2020-12-01")))
+	    		.thenThrow(new IOException());
 	}
 
 	@Test
