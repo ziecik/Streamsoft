@@ -3,37 +3,52 @@ package pl.streamsoft.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class CurrencyRate extends SimpleCurrencyRate {
-	private String currencyName;
-	private LocalDate localDate;
+public class CurrencyRate {
+    private String currencyName;
+    private CurrencyCode code;
+    private BigDecimal rateValue;
+    private LocalDate localDate;
 
-	public CurrencyRate() {
-	}
+    public CurrencyRate() {
+    }
 
-	public CurrencyRate(CurrencyCode code, BigDecimal rateValue) {
-		super(code, rateValue);
-	}
+    public CurrencyRate(String currencyName, CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
+	this.currencyName = currencyName;
+	this.code = code;
+	this.rateValue = rateValue;
+	this.localDate = localDate;
+    }
 
-	public CurrencyRate(String currencyName, CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
-		super(code, rateValue);
-		this.currencyName = currencyName;
-		this.localDate = localDate;
-	}
+    public CurrencyCode getCode() {
+	return code;
+    }
 
-	public String getCurrencyName() {
-		return currencyName;
-	}
+    public void setCode(CurrencyCode code) {
+	this.code = code;
+    }
 
-	public void setCurrencyName(String currencyName) {
-		this.currencyName = currencyName;
-	}
+    public BigDecimal getRateValue() {
+	return rateValue;
+    }
 
-	public LocalDate getLocalDate() {
-		return localDate;
-	}
+    public void setRateValue(BigDecimal rateValue) {
+	this.rateValue = rateValue;
+    }
 
-	public void setLocalDate(LocalDate localDate) {
-		this.localDate = localDate;
-	}
+    public String getCurrencyName() {
+	return currencyName;
+    }
+
+    public void setCurrencyName(String currencyName) {
+	this.currencyName = currencyName;
+    }
+
+    public LocalDate getLocalDate() {
+	return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+	this.localDate = localDate;
+    }
 
 }
