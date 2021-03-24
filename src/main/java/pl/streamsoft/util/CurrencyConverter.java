@@ -11,7 +11,8 @@ import pl.streamsoft.service.StringToObjectParser;
 public class CurrencyConverter {
     private CurrencyRateProvider currencyRateProvider;
     private StringToObjectParser dataToObjectConverter;
-
+    private static FifoCacheMap cacheMap = FifoCacheMap.getCachemap(5);
+    
     public CurrencyConverter() {
 	this.currencyRateProvider = new CurrencyRateProviderNBP();
 	this.dataToObjectConverter = new JSONParserNBP();
@@ -22,17 +23,28 @@ public class CurrencyConverter {
 	this.dataToObjectConverter = dataToObjectConverter;
     }
 
-
-
     public ConvertedAmount convertToPLN(AmountDataToConvert amountDataToConvert) {
 
 	DateValidator.validateDate(amountDataToConvert.getDateOfConversion()); // validate date
 
-	String providedData = StringDataProvider.getData(amountDataToConvert.getCurrencyCode(), amountDataToConvert.getDateOfConversion(), currencyRateProvider);
+	CurrencyRate currencyRate = null;
 
-	CurrencyRate currencyRate = dataToObjectConverter.convertToCurrencyRate(providedData);
+	// getData from cache
+	String key = amountDataToConvert.getCurrencyCode().toString() + amountDataToConvert.getDateOfConversion();
+	
+	if (cacheMap.containsKey(key)) {
+	    System.out.println("Data from cache");
+	    currencyRate = cacheMap.get(key);
+	    System.out.println("Converted with new data");
+	} else { // getData from some exteranal source
+	    String providedData = StringDataProvider.getData(amountDataToConvert.getCurrencyCode(),
+		    amountDataToConvert.getDateOfConversion(), currencyRateProvider);
 
+	    currencyRate = dataToObjectConverter.convertToCurrencyRate(providedData);
+	    cacheMap.put(key, currencyRate);
+	}
 	ConvertedAmount convertedAmount = new ConvertedAmount(amountDataToConvert, currencyRate);
+	System.out.println(cacheMap);
 
 	return convertedAmount;
 

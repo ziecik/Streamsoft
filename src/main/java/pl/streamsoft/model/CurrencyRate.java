@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class CurrencyRate {
+    private String id;
     private String currencyName;
     private CurrencyCode code;
     private BigDecimal rateValue;
@@ -17,6 +18,12 @@ public class CurrencyRate {
 	this.code = code;
 	this.rateValue = rateValue;
 	this.dateOfAnnouncedRate = localDate;
+	this.id = code.toString() + dateOfAnnouncedRate.toString();
+    }
+
+    
+    public String getId() {
+        return id;
     }
 
     public String getCurrencyName() {
