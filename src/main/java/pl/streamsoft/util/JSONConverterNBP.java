@@ -10,9 +10,9 @@ import net.minidev.json.parser.ParseException;
 import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
-import pl.streamsoft.service.DataToObjectConverter;
+import pl.streamsoft.service.StringToObjectConverter;
 
-public class JSONConverterNBP implements DataToObjectConverter {
+public class JSONConverterNBP implements StringToObjectConverter {
 
     @Override
     public CurrencyRate convertToCurrencyRate(String data) {
@@ -23,11 +23,12 @@ public class JSONConverterNBP implements DataToObjectConverter {
 	    JSONObject exchangeRate = (JSONObject) jsonParser.parse(data);
 	    JSONArray rates = (JSONArray) exchangeRate.get("rates");
 	    String currencyName = (String) exchangeRate.get("currency");
+	    CurrencyCode currencyCode = CurrencyCode.valueOf((String)exchangeRate.get("code"));
+
 	    JSONObject rate = (JSONObject) rates.get(0);
 
 	    BigDecimal rateValue = new BigDecimal(rate.getAsString("mid"));
 	    LocalDate localDate = LocalDate.parse(rate.getAsString("effectiveDate"));
-	    CurrencyCode currencyCode = (CurrencyCode) ((JSONObject) rate).get("code");
 	    CurrencyRate currencyRate = new CurrencyRate(currencyName, currencyCode, rateValue, localDate);
 
 	    return currencyRate;

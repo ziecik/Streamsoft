@@ -2,63 +2,48 @@ package pl.streamsoft.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 
 public class ConvertedAmount {
-//    private AmountDataToConvert amountDataToConvert;
-//    private CurrencyRate currencyRateUsedToConvertion;
+    private AmountDataToConvert amountDataToConvert;
+    private CurrencyRate currencyRateUsedToConvertion;
     private BigDecimal convertedValue;
 
-    private BigDecimal valueToConvert;
-    private CurrencyCode currencyCode;
-    private LocalDate dateOfConversion;
-    private String currencyName;
-    private LocalDate dateOfAnnoncedData;
-    private BigDecimal rateValue;
 
     public ConvertedAmount(AmountDataToConvert amountDataToConvert, CurrencyRate currencyRateUsedToConvertion) {
-//	this.amountDataToConvert = amountDataToConvert;
-//	this.currencyRateUsedToConvertion = currencyRateUsedToConvertion;
-	//
-	this.valueToConvert = amountDataToConvert.getValueToConvert();
-	this.currencyCode = amountDataToConvert.getCurrencyCode();
-	this.dateOfConversion = amountDataToConvert.getDateOfConversion();
-	this.currencyName = currencyRateUsedToConvertion.getCurrencyName();
-	this.dateOfAnnoncedData = currencyRateUsedToConvertion.getDateOfAnnouncedRate();
-	this.rateValue = currencyRateUsedToConvertion.getRateValue();
-	//
+	this.amountDataToConvert = amountDataToConvert;
+	this.currencyRateUsedToConvertion = currencyRateUsedToConvertion;
+	
 	this.convertedValue = calculateConvertedValue();
     }
 
-    public BigDecimal getValueToConvert() {
-	return valueToConvert;
+    public AmountDataToConvert getAmountDataToConvert() {
+        return amountDataToConvert;
     }
 
-    public CurrencyCode getCurrencyCode() {
-	return currencyCode;
+
+    public void setAmountDataToConvert(AmountDataToConvert amountDataToConvert) {
+        this.amountDataToConvert = amountDataToConvert;
     }
 
-    public LocalDate getDateOfConversion() {
-	return dateOfConversion;
+
+    public CurrencyRate getCurrencyRateUsedToConvertion() {
+        return currencyRateUsedToConvertion;
     }
 
-    public String getCurrencyName() {
-	return currencyName;
+
+    public void setCurrencyRateUsedToConvertion(CurrencyRate currencyRateUsedToConvertion) {
+        this.currencyRateUsedToConvertion = currencyRateUsedToConvertion;
     }
 
-    public LocalDate getDateOfAnnoncedData() {
-	return dateOfAnnoncedData;
-    }
-
-    public BigDecimal getRateValue() {
-	return rateValue;
-    }
 
     public BigDecimal getConvertedValue() {
-	return convertedValue;
+        return convertedValue;
     }
 
+
     private BigDecimal calculateConvertedValue() {
+	BigDecimal valueToConvert = amountDataToConvert.getValueToConvert();
+	BigDecimal rateValue = currencyRateUsedToConvertion.getRateValue();
 	return valueToConvert.multiply(rateValue).setScale(2, RoundingMode.HALF_DOWN);
     }
 

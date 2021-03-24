@@ -11,6 +11,10 @@ import pl.streamsoft.util.CurrencyConverter;
 public class SaleDocumentService {
 
     public void insert() {
-	ConvertedAmount valeInPLN = new CurrencyConverter().convertToPLN(new AmountDataToConvert(new BigDecimal("1499.99"), CurrencyCode.GBP, LocalDate.parse("2021-03-21")));
+	BigDecimal valueToConvert = new BigDecimal("1499.99");
+	CurrencyCode currencyCode = CurrencyCode.GBP;
+	LocalDate dateOfconversion = LocalDate.parse("2021-03-24");
+	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, currencyCode, dateOfconversion);
+	ConvertedAmount convertedAmount = new CurrencyConverter().convertToPLN(amountDataToConvert);
     }
 }

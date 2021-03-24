@@ -14,16 +14,14 @@ public class DateValidatorTest {
 
     @Test
     public void should_throwFutudeDataException_when_dateIsFromFuture() {
-	LocalDate localDate;
-	Throwable thrown;
 
-//		given: 
-	localDate = LocalDate.now().plusDays(1);
+//	given: 
+	LocalDate localDate = LocalDate.now().plusDays(1);
 
-//		when: 
-	thrown = catchThrowable(() -> DateValidator.validateDate(localDate));
+//	when: 
+	Throwable thrown = catchThrowable(() -> DateValidator.validateDate(localDate));
 
-//		then: 
+//	then: 
 	assertThat(thrown).isInstanceOf(FutureDateException.class);
 	assertThat(thrown).hasMessage("Currency rate on this day is not announced yet");
     }
