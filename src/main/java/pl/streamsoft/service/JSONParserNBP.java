@@ -1,4 +1,4 @@
-package pl.streamsoft.util;
+package pl.streamsoft.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,9 +10,8 @@ import net.minidev.json.parser.ParseException;
 import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
-import pl.streamsoft.service.StringToObjectConverter;
 
-public class JSONConverterNBP implements StringToObjectConverter {
+public class JSONParserNBP implements StringToObjectParser {
 
     @Override
     public CurrencyRate convertToCurrencyRate(String data) {
@@ -23,7 +22,7 @@ public class JSONConverterNBP implements StringToObjectConverter {
 	    JSONObject exchangeRate = (JSONObject) jsonParser.parse(data);
 	    JSONArray rates = (JSONArray) exchangeRate.get("rates");
 	    String currencyName = (String) exchangeRate.get("currency");
-	    CurrencyCode currencyCode = CurrencyCode.valueOf((String)exchangeRate.get("code"));
+	    CurrencyCode currencyCode = CurrencyCode.valueOf((String) exchangeRate.get("code"));
 
 	    JSONObject rate = (JSONObject) rates.get(0);
 
@@ -33,7 +32,7 @@ public class JSONConverterNBP implements StringToObjectConverter {
 
 	    return currencyRate;
 	} catch (ParseException e) {
-	    throw new DataNotFoundException("Parsing with parser: " + e.getClass().getName() + " failed", e);
+	    throw new DataNotFoundException("Parsing data with parser: " + e.getClass().getName() + " failed", e);
 	}
     }
 

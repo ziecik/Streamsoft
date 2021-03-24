@@ -5,18 +5,19 @@ import pl.streamsoft.model.ConvertedAmount;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.service.CurrencyRateProvider;
 import pl.streamsoft.service.CurrencyRateProviderNBP;
-import pl.streamsoft.service.StringToObjectConverter;
+import pl.streamsoft.service.JSONParserNBP;
+import pl.streamsoft.service.StringToObjectParser;
 
 public class CurrencyConverter {
     private CurrencyRateProvider currencyRateProvider;
-    private StringToObjectConverter dataToObjectConverter;
+    private StringToObjectParser dataToObjectConverter;
 
     public CurrencyConverter() {
 	this.currencyRateProvider = new CurrencyRateProviderNBP();
-	this.dataToObjectConverter = new JSONConverterNBP();
+	this.dataToObjectConverter = new JSONParserNBP();
     }
 
-    public CurrencyConverter(CurrencyRateProvider currencyRateProvider, StringToObjectConverter dataToObjectConverter) {
+    public CurrencyConverter(CurrencyRateProvider currencyRateProvider, StringToObjectParser dataToObjectConverter) {
 	this.currencyRateProvider = currencyRateProvider;
 	this.dataToObjectConverter = dataToObjectConverter;
     }

@@ -24,7 +24,7 @@ public class CurrencyRateProviderNBP implements CurrencyRateProvider {
 //		localDate = localDate.minusDays(1);
 //	}
 	if (localDate.getDayOfWeek() == DayOfWeek.SUNDAY || localDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
-	    new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getSimpleName() + " on date "
+	    new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getName() + " on date "
 		    + localDate.toString());
 	}
 	// Connection
@@ -40,10 +40,10 @@ public class CurrencyRateProviderNBP implements CurrencyRateProvider {
 	    bufferedReader.close();
 	    return providedData;
 	} catch (MalformedURLException e) {
-	    throw new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getSimpleName()
+	    throw new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getName()
 		    + " on date " + localDate.toString(), e); /////////////////////////////////////////////////////////////////////////
 	} catch (IOException e) {
-	    throw new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getSimpleName()
+	    throw new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getName()
 		    + " on date " + localDate.toString(), e); /////////////////////////////////////////////////////////////////////////
 	}
     }

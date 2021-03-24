@@ -15,28 +15,24 @@ public class AmountDataToConvert {
 	this.dateOfConversion = dateOfConversion;
     }
 
-    public BigDecimal getValueToConvert() {
-	return valueToConvert;
-    }
 
     public void setValueToConvert(BigDecimal valueToConvert) {
 	this.valueToConvert = valueToConvert;
     }
 
-    public CurrencyCode getCurrencyCode() {
-	return currencyCode;
+
+    public BigDecimal getValueToConvert() {
+        return valueToConvert;
     }
 
-    public void setCurrencyCode(CurrencyCode currencyCode) {
-	this.currencyCode = currencyCode;
+
+    public CurrencyCode getCurrencyCode() {
+        return currencyCode;
     }
+
 
     public LocalDate getDateOfConversion() {
-	return dateOfConversion;
-    }
-
-    public void setDateOfConversion(LocalDate dateOfConversion) {
-	this.dateOfConversion = dateOfConversion;
+        return dateOfConversion;
     }
 
 }

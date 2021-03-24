@@ -14,7 +14,9 @@ public class SaleDocumentService {
 	BigDecimal valueToConvert = new BigDecimal("1499.99");
 	CurrencyCode currencyCode = CurrencyCode.GBP;
 	LocalDate dateOfconversion = LocalDate.parse("2021-03-22");
+	
 	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, currencyCode, dateOfconversion);
+	
 	ConvertedAmount convertedAmount = new CurrencyConverter().convertToPLN(amountDataToConvert);
     }
 }

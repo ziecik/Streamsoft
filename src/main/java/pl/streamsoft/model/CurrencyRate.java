@@ -19,36 +19,20 @@ public class CurrencyRate {
 	this.dateOfAnnouncedRate = localDate;
     }
 
-    public CurrencyCode getCode() {
-	return code;
+    public String getCurrencyName() {
+	return currencyName;
     }
 
-    public void setCode(CurrencyCode code) {
-	this.code = code;
+    public CurrencyCode getCode() {
+	return code;
     }
 
     public BigDecimal getRateValue() {
 	return rateValue;
     }
 
-    public void setRateValue(BigDecimal rateValue) {
-	this.rateValue = rateValue;
-    }
-
-    public String getCurrencyName() {
-	return currencyName;
-    }
-
-    public void setCurrencyName(String currencyName) {
-	this.currencyName = currencyName;
-    }
-
     public LocalDate getDateOfAnnouncedRate() {
 	return dateOfAnnouncedRate;
-    }
-
-    public void setDateOfAnnouncedRate(LocalDate localDate) {
-	this.dateOfAnnouncedRate = localDate;
     }
 
 }

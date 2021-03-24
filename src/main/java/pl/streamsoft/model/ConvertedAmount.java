@@ -47,4 +47,9 @@ public class ConvertedAmount {
 	return valueToConvert.multiply(rateValue).setScale(2, RoundingMode.HALF_DOWN);
     }
 
+    public ConvertedAmount recalculateConvertedValue(BigDecimal valueToRecalculate) {
+	amountDataToConvert.setValueToConvert(valueToRecalculate);
+	return new ConvertedAmount(amountDataToConvert, currencyRateUsedToConvertion);
+    }
+    
 }
