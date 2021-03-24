@@ -1,9 +1,10 @@
 package test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 
 import pl.streamsoft.model.AmountDataToConvert;
@@ -30,7 +31,7 @@ public class RollbackDateTest {
 //		then:
 	LocalDate fri = LocalDate.parse("2021-03-19");
 	LocalDate dateOfAnnouncedRate = convertedAmount.getCurrencyRateUsedToConvertion().getDateOfAnnouncedRate();
-	AssertJUnit.assertEquals(fri,dateOfAnnouncedRate);
+	assertThat(dateOfAnnouncedRate).isEqualTo(fri);
     }
 
     
@@ -51,6 +52,7 @@ public class RollbackDateTest {
 //		then:
 	LocalDate dayBeforeHolidayWithData = LocalDate.parse("2021-01-05");
 	LocalDate dateOfAnnouncedRate = convertedAmount.getCurrencyRateUsedToConvertion().getDateOfAnnouncedRate();
-	AssertJUnit.assertEquals(dayBeforeHolidayWithData,dateOfAnnouncedRate);
+	
+	assertThat(dateOfAnnouncedRate).isEqualTo(dayBeforeHolidayWithData);
     }
 }

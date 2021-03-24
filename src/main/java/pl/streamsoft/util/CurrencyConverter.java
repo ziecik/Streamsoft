@@ -37,29 +37,4 @@ public class CurrencyConverter {
 
     }
 
-//    public String getData(CurrencyCode currencyCode, LocalDate localDate) {
-//	int attempts = 5;
-//
-//	while (true) {
-//	    try {
-//		String providedData = currencyRateProvider.getCurrencyRateData(currencyCode, localDate);
-//
-////		if (providedData != null) {
-////		    return providedData;
-////		} else if (--attempts == 0) {
-////		    throw new DataNotFoundException(
-////			    "Choosen CurrencyRateService does not provide correct data right now. [5 attempts were made]");
-////		}
-//		return providedData;
-//	    } catch (IOException e) {
-//		localDate = localDate.minusDays(1);
-//		if (--attempts == 0) {
-//		    throw new DataNotFoundException(
-//			    "Choosen CurrencyRateProvider is not available right now. [5 attempts were made]", e);
-//		}
-//	    }
-//	}
-//
-//    }
-
 }

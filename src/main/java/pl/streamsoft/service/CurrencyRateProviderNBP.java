@@ -16,12 +16,16 @@ import pl.streamsoft.model.CurrencyCode;
 public class CurrencyRateProviderNBP implements CurrencyRateProvider {
 
     @Override
-    public String getCurrencyRateData(CurrencyCode currencyCode, LocalDate localDate) throws IOException {
-	//	weekends
-	if (localDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-		localDate = localDate.minusDays(2);
-	} else if (localDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
-		localDate = localDate.minusDays(1);
+    public String getCurrencyRateData(CurrencyCode currencyCode, LocalDate localDate) {
+	// weekends
+//	if (localDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+//		localDate = localDate.minusDays(2);
+//	} else if (localDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
+//		localDate = localDate.minusDays(1);
+//	}
+	if (localDate.getDayOfWeek() == DayOfWeek.SUNDAY || localDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
+	    new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getSimpleName() + " on date "
+		    + localDate.toString());
 	}
 	// Connection
 	String apiURL = "http://api.nbp.pl/api/exchangerates/rates/a/" + currencyCode.toString().toLowerCase() + "/"
@@ -36,7 +40,11 @@ public class CurrencyRateProviderNBP implements CurrencyRateProvider {
 	    bufferedReader.close();
 	    return providedData;
 	} catch (MalformedURLException e) {
-	    throw new DataNotFoundException("Data not found", e); /////////////////////////////////////////////////////////////////////////
+	    throw new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getSimpleName()
+		    + " on date " + localDate.toString(), e); /////////////////////////////////////////////////////////////////////////
+	} catch (IOException e) {
+	    throw new DataNotFoundException("Data not found by " + CurrencyRateProviderNBP.class.getSimpleName()
+		    + " on date " + localDate.toString(), e); /////////////////////////////////////////////////////////////////////////
 	}
     }
 
