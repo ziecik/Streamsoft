@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
-import pl.streamsoft.service.DBService;
+import pl.streamsoft.service.CurrencyRateRepository;
 
 public class Main {
 
@@ -16,7 +16,7 @@ public class Main {
 	
 //	new DBService().addObject(entity);
 	
-	CurrencyRate object =  new DBService().getObject("GBP2021-03-24", CurrencyRate.class);
+	CurrencyRate object =  new CurrencyRateRepository().find("GBP2021-03-24");
 	System.out.println(object.getId());
     }
 
