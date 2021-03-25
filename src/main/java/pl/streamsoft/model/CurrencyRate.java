@@ -3,10 +3,20 @@ package pl.streamsoft.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+
+@Entity
 public class CurrencyRate {
+    @Id
     private String id;
     private String currencyName;
+    @Enumerated(EnumType.STRING)
     private CurrencyCode code;
+    @Column(columnDefinition = "Decimal(5,4)")
     private BigDecimal rateValue;
     private LocalDate dateOfAnnouncedRate;
 
