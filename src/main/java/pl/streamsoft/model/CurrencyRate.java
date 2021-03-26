@@ -19,7 +19,8 @@ public class CurrencyRate {
     @Column(columnDefinition = "Decimal(5,4)")
     private BigDecimal rateValue;
     private LocalDate dateOfAnnouncedRate;
-
+    private String providerName = "unknown";
+    
     public CurrencyRate() {
     }
 
@@ -67,6 +68,18 @@ public class CurrencyRate {
     public void setDateOfAnnouncedRate(LocalDate dateOfAnnouncedRate) {
         this.dateOfAnnouncedRate = dateOfAnnouncedRate;
     }
-    
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getProviderName() {
+	return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+	this.providerName = providerName;
+    }
+    
+    
 }

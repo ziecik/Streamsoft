@@ -20,9 +20,10 @@ public class CacheTest {
 	// given:
 	CurrencyConverter currencyConverter = new CurrencyConverter();
 	CurrencyCode czk = CurrencyCode.CZK;
-	LocalDate date = LocalDate.of(2021, 3, 23);
+	LocalDate date = LocalDate.of(2021, 3, 23);	
+	BigDecimal valueToConvert = new BigDecimal("2000");
 	
-	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(new BigDecimal("2000"), czk, date);
+	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, czk, date);
 	
 	// when:
 	
