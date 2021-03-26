@@ -52,4 +52,21 @@ public class CurrencyRate {
 	return dateOfAnnouncedRate;
     }
 
+    public void setCurrencyName(String currencyName) {
+        this.currencyName = currencyName;
+    }
+
+    public void setCode(CurrencyCode code) {
+        this.code = code;
+    }
+
+    public void setRateValue(BigDecimal rateValue) {
+        this.rateValue = rateValue;
+    }
+
+    public void setDateOfAnnouncedRate(LocalDate dateOfAnnouncedRate) {
+        this.dateOfAnnouncedRate = dateOfAnnouncedRate;
+    }
+    
+
 }

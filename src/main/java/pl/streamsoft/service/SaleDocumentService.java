@@ -27,11 +27,12 @@ public class SaleDocumentService {
 	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.of(2021,03,21)));
 	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-20")));
 	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-19")));
-	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-18")));
+	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-21")));
 	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-17")));
 	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-21")));
 	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-21")));
 	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-13")));
+	 new CurrencyConverter().convertToPLN(new AmountDataToConvert(valueToConvert, currencyCode, LocalDate.parse("2021-03-17")));
 
     }
 }

@@ -3,34 +3,43 @@ package pl.streamsoft.service;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 
 import pl.streamsoft.model.CurrencyRate;
+import pl.streamsoft.repository.Repository;
 
-public class DBService {
-
+public class CurrencyRateRepository implements Repository<CurrencyRate, String> {
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
-    
-    public void addObject(Object object) {
+
+    @Override
+    public void add(CurrencyRate entity) {
 	beginTransaction();
-	entityManager.persist(object);
+	entityManager.persist(entity);
 	closeTransaction();
     }
-    
-    public void removeObject(Object object) {
+
+    @Override
+    public void remove(String id) {
 	beginTransaction();
-	entityManager.remove(object);
+	CurrencyRate find = entityManager.find(CurrencyRate.class, id);
+	entityManager.remove(find);
 	closeTransaction();
     }
-    
-    public CurrencyRate getObject(String id, Class<? extends Object> clazz) {
+
+    @Override
+    public CurrencyRate find(String id) {
 	beginTransaction();
-	TypedQuery<CurrencyRate > createQuery = entityManager.createQuery("select c from CurrencyRate c where c.id = :id", CurrencyRate.class);
-	createQuery.setParameter("id", id);
-	CurrencyRate singleResult = createQuery.getSingleResult();
+	CurrencyRate find = entityManager.find(CurrencyRate.class, id);
 	closeTransaction();
-	return singleResult;
+	return find;
+    }
+
+    @Override
+    public void update(String id, CurrencyRate entity) {
+	beginTransaction();
+	CurrencyRate find = entityManager.find(CurrencyRate.class, id);
+	find.setRateValue(entity.getRateValue());
+	closeTransaction();
     }
 
     private void beginTransaction() {

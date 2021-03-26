@@ -11,7 +11,7 @@ import pl.streamsoft.service.StringToObjectParser;
 public class CurrencyConverter {
     private CurrencyRateProvider currencyRateProvider;
     private StringToObjectParser dataToObjectConverter;
-    private static FifoCacheMap cacheMap = FifoCacheMap.getCachemap(5);
+    public static LRUCacheMap cacheMap = LRUCacheMap.getCachemap(5);
 
     public CurrencyConverter() {
 	this.currencyRateProvider = new CurrencyRateProviderNBP();
@@ -35,18 +35,19 @@ public class CurrencyConverter {
 	if (cacheMap.containsKey(key)) {
 
 	    currencyRate = cacheMap.get(key);
-
+	    System.out.println(cacheMap);
 	} else { // getData from some exteranal source
 	    String providedData = StringDataProvider.getData(amountDataToConvert.getCurrencyCode(),
 		    amountDataToConvert.getDateOfConversion(), currencyRateProvider);
 
 	    currencyRate = dataToObjectConverter.convertToCurrencyRate(providedData);
 	    cacheMap.put(key, currencyRate);
+	    System.out.println(cacheMap);
 	}
 	ConvertedAmount convertedAmount = new ConvertedAmount(amountDataToConvert, currencyRate);
 
 	return convertedAmount;
 
     }
-
+  
 }
