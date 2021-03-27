@@ -32,14 +32,14 @@ public class CacheTest {
 	String key = czk + date.toString();
 
 	
-	Assertions.assertThat(CurrencyConverter.cacheMap.get(key)).isEqualTo(convertedToPLN.getCurrencyRateUsedToConvertion());
+	Assertions.assertThat(LRUCacheMap.getCachemap().get(key)).isEqualTo(convertedToPLN.getCurrencyRateUsedToConvertion());
     }
 
     @Test
     void should_takeDataFromCache_when_dataIsStoredInCache() {
 	// given:
 	CurrencyConverter currencyConverter = new CurrencyConverter();
-	LRUCacheMap cacheMap = CurrencyConverter.cacheMap;
+	LRUCacheMap cacheMap = LRUCacheMap.getCachemap();
 	CurrencyRate currencyRateAddedToCashe = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 23));
 	cacheMap.put(currencyRateAddedToCashe.getId(), currencyRateAddedToCashe);
 	// when:

@@ -3,9 +3,9 @@ package pl.streamsoft.util;
 import pl.streamsoft.model.AmountDataToConvert;
 import pl.streamsoft.model.ConvertedAmount;
 import pl.streamsoft.model.CurrencyRate;
+import pl.streamsoft.repository.CurrencyRateRepository;
 import pl.streamsoft.service.CurrencyRateProvider;
 import pl.streamsoft.service.CurrencyRateProviderNBP;
-import pl.streamsoft.service.CurrencyRateRepository;
 import pl.streamsoft.service.JSONParserNBP;
 import pl.streamsoft.service.StringToObjectParser;
 
@@ -13,8 +13,8 @@ public class CurrencyConverter {
     private CurrencyRateProvider currencyRateProvider;
     private StringToObjectParser dataToObjectConverter;
     private CurrencyRateRepository currencyRateRepository = new CurrencyRateRepository();
-    public static LRUCacheMap cacheMap = LRUCacheMap.getCachemap(5);
-
+    public static LRUCacheMap cacheMap = LRUCacheMap.getCachemap();
+  
     public CurrencyConverter() {
 	this.currencyRateProvider = new CurrencyRateProviderNBP();
 	this.dataToObjectConverter = new JSONParserNBP();
@@ -40,7 +40,8 @@ public class CurrencyConverter {
 	} else if ((currencyRate = currencyRateRepository.find(key)) != null) {
 
 	    cacheMap.put(key, currencyRate);
-
+	    System.out.println("Sprawdzam  kesza: " + cacheMap);
+	    
 	} else { // getData from some exteranal source
 	    String providedData = StringDataProvider.getData(amountDataToConvert.getCurrencyCode(),
 		    amountDataToConvert.getDateOfConversion(), currencyRateProvider);
@@ -48,11 +49,11 @@ public class CurrencyConverter {
 	    currencyRate = dataToObjectConverter.convertToCurrencyRate(providedData);
 	    currencyRate.setId(key);
 	    currencyRate.setProviderName(currencyRateProvider.getClass().getSimpleName());
+	   
 	    cacheMap.put(key, currencyRate);
-
 	    currencyRateRepository.add(currencyRate);
 
-	    System.out.println(cacheMap);
+	    System.out.println("kasz: " + cacheMap);
 	}
 	
 	ConvertedAmount convertedAmount = new ConvertedAmount(amountDataToConvert, currencyRate);
