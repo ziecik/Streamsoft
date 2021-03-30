@@ -1,11 +1,13 @@
 package pl.streamsoft.repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.util.CurrencyRateSource;
@@ -63,7 +65,7 @@ public class CurrencyRateRepository implements Repository<CurrencyRate, String>,
     @Override
     public CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
 	CurrencyRate find = find(currencyCode.toString() + dateOfConversion.toString());
-	return find;
+	return Optional.ofNullable(find).orElseThrow(() -> new DataNotFoundException("Data not found in db"));
     }
 
 }

@@ -1,30 +1,28 @@
-package pl.streamsoft.util;
+package pl.streamsoft.util.cache;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
+import pl.streamsoft.util.CurrencyRateSource;
 
 public class CacheMap extends ConcurrentHashMap<String, CurrencyRate> implements CurrencyRateSource {
 
     public static CacheMap cacheMap = new CacheMap();
 
-    public static CacheMap getInstance() {
-	return cacheMap;
-    }
-
-    private int maxSize;
+//    public static CacheMap getInstance() {
+//	return cacheMap;
+//    }
 
     public CacheMap() {
 	super(20);
-	maxSize = 20;
     }
 
     public CacheMap(int size) {
 	super(size);
-	maxSize = size;
     }
 
     @Override
@@ -36,10 +34,8 @@ public class CacheMap extends ConcurrentHashMap<String, CurrencyRate> implements
     @Override
     public CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
 	CurrencyRate currencyRate = get(currencyCode.toString() + dateOfConversion.toString());
-	if (currencyRate != null)
-	    return currencyRate;
-	else
-	    throw new DataNotFoundException("Data not found in cache");
+
+	return Optional.ofNullable(currencyRate).orElseThrow(() -> new DataNotFoundException("Data not found in cache"));
     }
 
 }

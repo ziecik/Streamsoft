@@ -17,7 +17,7 @@ public class SaleDocumentService {
 	CurrencyCode eur = CurrencyCode.EUR;
 
 	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, eur,
-		LocalDate.parse("2021-03-17"));
+		LocalDate.parse("2021-03-01"));
 
 	ConvertedAmount amount1 = new CurrencyConverter().convertToPLN(amountDataToConvert);
 

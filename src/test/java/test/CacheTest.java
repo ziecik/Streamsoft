@@ -11,7 +11,7 @@ import pl.streamsoft.model.ConvertedAmount;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.util.CurrencyConverter;
-import pl.streamsoft.util.CacheMap;
+import pl.streamsoft.util.cache.CacheMap;
 
 public class CacheTest {
 

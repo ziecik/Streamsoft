@@ -10,23 +10,17 @@ import pl.streamsoft.model.ConvertedAmount;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.repository.CurrencyRateRepository;
+import pl.streamsoft.util.cache.CacheMap;
+import pl.streamsoft.util.cache.LRUSource;
 
 public class CurrencyConverter {
 
     private List<CurrencyRateSource> currencyRateSources = new ArrayList<>();
 
     public CurrencyConverter() {
-	this.currencyRateSources.add(CacheMap.cacheMap);
-	this.currencyRateSources.add(new CurrencyRateSource() {
-	    
-	    @Override
-	    public CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
-		// TODO Auto-generated method stub
-		return null;
-	    }
-	});
-//	this.currencyRateSources.add(new ExternalCurrencyRateSource());
-//	this.currencyRateSources.add(new CurrencyRateRepository());
+	this.currencyRateSources.add(LRUSource.lruCashMap);
+	this.currencyRateSources.add((CurrencyRateSource) LRUSource.lruCashMap);
+	this.currencyRateSources.add(new CurrencyRateRepository());
     }
 
     public CurrencyConverter(List<CurrencyRateSource> currencyRateSources) {
@@ -48,16 +42,20 @@ public class CurrencyConverter {
 
     private CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
 	CurrencyRate currencyRate = null;
+	int counter = currencyRateSources.size() -1 ;
 	for (CurrencyRateSource currencyRateSource : currencyRateSources) {
 
 	    try {
-		currencyRate = currencyRateSource.getCurrencyRate(currencyCode, dateOfConversion);
+		currencyRateSource.getCurrencyRate(currencyCode, dateOfConversion);
+		
 		if (currencyRate != null)
 		    break;
+		else
+		    throw new DataNotFoundException("Data not found in used currency source");
 	    } catch (DataNotFoundException e) {
-		if (currencyRateSource == currencyRateSources.get(currencyRateSources.size() - 1)) {
-		    throw new DataNotFoundException("There is no data in any known source: " + this.currencyRateSources.toString(),
-			    e);
+		if (counter-- == 0) {
+		    throw new DataNotFoundException(
+			    "There is no data in any known source", e);
 		}
 
 	    }

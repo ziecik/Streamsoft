@@ -1,0 +1,26 @@
+package pl.streamsoft.util.cache;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import pl.streamsoft.exception.DataNotFoundException;
+import pl.streamsoft.model.CurrencyCode;
+import pl.streamsoft.model.CurrencyRate;
+import pl.streamsoft.util.CurrencyRateSource;
+
+public class LRUSource extends LRU<String, CurrencyRate> implements CurrencyRateSource {
+
+    public static LRUSource lruCashMap = new LRUSource(5);
+    
+    public LRUSource(int size) {
+	super(size);
+    }
+
+    @Override
+    public CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
+	// TODO Auto-generated method stub
+	CurrencyRate currencyRate = lruCashMap.get(currencyCode.toString() + dateOfConversion.toString());
+	return Optional.ofNullable(currencyRate).orElseThrow(() -> new DataNotFoundException("Data not found in LRUSource"));
+    }
+
+}

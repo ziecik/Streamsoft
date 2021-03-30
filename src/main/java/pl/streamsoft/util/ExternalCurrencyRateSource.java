@@ -1,7 +1,9 @@
 package pl.streamsoft.util;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
+import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.service.CurrencyRateProvider;
@@ -32,7 +34,7 @@ public class ExternalCurrencyRateSource implements CurrencyRateSource {
 	String providedData = StringDataProvider.getData(currencyCode, dateOfConversion, currencyRateProvider);
 	CurrencyRate currencyRate = dataToObjectConverter.convertToCurrencyRate(providedData);
 	
-	return currencyRate;
+	return Optional.ofNullable(currencyRate).orElseThrow(() -> new DataNotFoundException("Data not found by external source"));
     }
 
 }
