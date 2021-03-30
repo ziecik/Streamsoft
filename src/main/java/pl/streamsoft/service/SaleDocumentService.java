@@ -9,7 +9,6 @@ import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.repository.CurrencyRateRepository;
 import pl.streamsoft.util.CurrencyConverter;
-import pl.streamsoft.util.LRUCacheMap;
 
 public class SaleDocumentService {
 
@@ -22,12 +21,10 @@ public class SaleDocumentService {
 
 	ConvertedAmount amount1 = new CurrencyConverter().convertToPLN(amountDataToConvert);
 
-	new CurrencyRateRepository().update(eur.toString() + "2021-03-17",
-		new CurrencyRate("euro", eur, new BigDecimal("8.8888"), LocalDate.parse("2021-03-17")));
-
-	System.out.println("i co teraz");
-
-	ConvertedAmount amount2 = new CurrencyConverter().convertToPLN(amountDataToConvert);
+//	new CurrencyRateRepository().update(eur.toString() + "2021-03-17",
+//		new CurrencyRate("euro", eur, new BigDecimal("8.8888"), LocalDate.parse("2021-03-17")));
+//
+//	ConvertedAmount amount2 = new CurrencyConverter().convertToPLN(amountDataToConvert);
 
     }
 }

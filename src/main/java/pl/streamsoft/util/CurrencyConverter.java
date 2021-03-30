@@ -1,65 +1,67 @@
 package pl.streamsoft.util;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.AmountDataToConvert;
 import pl.streamsoft.model.ConvertedAmount;
+import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.repository.CurrencyRateRepository;
-import pl.streamsoft.service.CurrencyRateProvider;
-import pl.streamsoft.service.CurrencyRateProviderNBP;
-import pl.streamsoft.service.JSONParserNBP;
-import pl.streamsoft.service.StringToObjectParser;
 
 public class CurrencyConverter {
-    private CurrencyRateProvider currencyRateProvider;
-    private StringToObjectParser dataToObjectConverter;
-    private CurrencyRateRepository currencyRateRepository = new CurrencyRateRepository();
-    public static LRUCacheMap cacheMap = LRUCacheMap.getCachemap();
-  
+
+    private List<CurrencyRateSource> currencyRateSources = new ArrayList<>();
+
     public CurrencyConverter() {
-	this.currencyRateProvider = new CurrencyRateProviderNBP();
-	this.dataToObjectConverter = new JSONParserNBP();
+	this.currencyRateSources.add(CacheMap.cacheMap);
+	this.currencyRateSources.add(new CurrencyRateSource() {
+	    
+	    @Override
+	    public CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
+		// TODO Auto-generated method stub
+		return null;
+	    }
+	});
+//	this.currencyRateSources.add(new ExternalCurrencyRateSource());
+//	this.currencyRateSources.add(new CurrencyRateRepository());
     }
 
-    public CurrencyConverter(CurrencyRateProvider currencyRateProvider, StringToObjectParser dataToObjectConverter) {
-	this.currencyRateProvider = currencyRateProvider;
-	this.dataToObjectConverter = dataToObjectConverter;
+    public CurrencyConverter(List<CurrencyRateSource> currencyRateSources) {
+	this.currencyRateSources = currencyRateSources;
     }
 
     public ConvertedAmount convertToPLN(AmountDataToConvert amountDataToConvert) {
 
 	DateValidator.validateDate(amountDataToConvert.getDateOfConversion()); // validate date
 
-	CurrencyRate currencyRate;
+	CurrencyRate currencyRate = getCurrencyRate(amountDataToConvert.getCurrencyCode(),
+		amountDataToConvert.getDateOfConversion());
 
-	String key = amountDataToConvert.getCurrencyCode().toString() + amountDataToConvert.getDateOfConversion();
-
-	if (cacheMap.containsKey(key)) {
-
-	    currencyRate = cacheMap.get(key);
-
-	} else if ((currencyRate = currencyRateRepository.find(key)) != null) {
-
-	    cacheMap.put(key, currencyRate);
-	    System.out.println("Sprawdzam  kesza: " + cacheMap);
-	    
-	} else { // getData from some exteranal source
-	    String providedData = StringDataProvider.getData(amountDataToConvert.getCurrencyCode(),
-		    amountDataToConvert.getDateOfConversion(), currencyRateProvider);
-
-	    currencyRate = dataToObjectConverter.convertToCurrencyRate(providedData);
-	    currencyRate.setId(key);
-	    currencyRate.setProviderName(currencyRateProvider.getClass().getSimpleName());
-	   
-	    cacheMap.put(key, currencyRate);
-	    currencyRateRepository.add(currencyRate);
-
-	    System.out.println("kasz: " + cacheMap);
-	}
-	
 	ConvertedAmount convertedAmount = new ConvertedAmount(amountDataToConvert, currencyRate);
 
 	return convertedAmount;
 
     }
 
+    private CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
+	CurrencyRate currencyRate = null;
+	for (CurrencyRateSource currencyRateSource : currencyRateSources) {
+
+	    try {
+		currencyRate = currencyRateSource.getCurrencyRate(currencyCode, dateOfConversion);
+		if (currencyRate != null)
+		    break;
+	    } catch (DataNotFoundException e) {
+		if (currencyRateSource == currencyRateSources.get(currencyRateSources.size() - 1)) {
+		    throw new DataNotFoundException("There is no data in any known source: " + this.currencyRateSources.toString(),
+			    e);
+		}
+
+	    }
+	}
+	return currencyRate;
+    }
 }

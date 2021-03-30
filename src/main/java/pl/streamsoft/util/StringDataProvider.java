@@ -8,6 +8,7 @@ import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.service.CurrencyRateProvider;
 
 public class StringDataProvider {
+    
     public static String getData(CurrencyCode currencyCode, LocalDate localDate,
 	    CurrencyRateProvider currencyRateProvider) {
 	int attempts = 5;

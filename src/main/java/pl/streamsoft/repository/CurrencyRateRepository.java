@@ -1,26 +1,20 @@
 package pl.streamsoft.repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
-import pl.streamsoft.util.CurrencyConverter;
-import pl.streamsoft.util.Observable;
-import pl.streamsoft.util.Observer;
+import pl.streamsoft.util.CurrencyRateSource;
 
-public class CurrencyRateRepository implements Observable, Repository<CurrencyRate, String> {
+public class CurrencyRateRepository implements Repository<CurrencyRate, String>, CurrencyRateSource {
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
-    private List<Observer> observers = new ArrayList<>();
 
-    
-    
     public CurrencyRateRepository() {
-	addObserver(CurrencyConverter.cacheMap);
     }
 
     @Override
@@ -51,9 +45,7 @@ public class CurrencyRateRepository implements Observable, Repository<CurrencyRa
 	beginTransaction();
 	CurrencyRate find = entityManager.find(CurrencyRate.class, id);
 	find.setRateValue(entity.getRateValue());
-	addObserver(CurrencyConverter.cacheMap);
 	closeTransaction();
-	notifyObservers(find);
     }
 
     private void beginTransaction() {
@@ -69,18 +61,9 @@ public class CurrencyRateRepository implements Observable, Repository<CurrencyRa
     }
 
     @Override
-    public void addObserver(Observer observer) {
-	this.observers.add(observer);
-    }
-
-    @Override
-    public void remove(Observer observer) {
-	this.observers.remove(observer);
-    }
-
-    @Override
-    public void notifyObservers(Object object) {
-	observers.forEach(o -> o.update(object));
+    public CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
+	CurrencyRate find = find(currencyCode.toString() + dateOfConversion.toString());
+	return find;
     }
 
 }
