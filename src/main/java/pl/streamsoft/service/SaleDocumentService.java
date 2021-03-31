@@ -9,22 +9,20 @@ import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.repository.CurrencyRateRepository;
 import pl.streamsoft.util.CurrencyConverter;
+import pl.streamsoft.util.cache.LRUSource;
 
 public class SaleDocumentService {
 
     public void insert() {
+	
 	BigDecimal valueToConvert = new BigDecimal("1499.99");
-	CurrencyCode eur = CurrencyCode.EUR;
-
-	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, eur,
-		LocalDate.parse("2021-03-01"));
+	CurrencyCode code = CurrencyCode.USD;
+	LocalDate date = LocalDate.of(2021,3,31);
+	
+	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, code,
+		date);
 
 	ConvertedAmount amount1 = new CurrencyConverter().convertToPLN(amountDataToConvert);
-
-//	new CurrencyRateRepository().update(eur.toString() + "2021-03-17",
-//		new CurrencyRate("euro", eur, new BigDecimal("8.8888"), LocalDate.parse("2021-03-17")));
-//
-//	ConvertedAmount amount2 = new CurrencyConverter().convertToPLN(amountDataToConvert);
-
+	
     }
 }

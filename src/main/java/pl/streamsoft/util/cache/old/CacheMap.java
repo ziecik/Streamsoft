@@ -1,4 +1,4 @@
-package pl.streamsoft.util.cache;
+package pl.streamsoft.util.cache.old;
 
 import java.time.LocalDate;
 import java.util.Optional;

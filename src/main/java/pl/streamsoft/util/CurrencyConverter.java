@@ -9,8 +9,8 @@ import pl.streamsoft.model.AmountDataToConvert;
 import pl.streamsoft.model.ConvertedAmount;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
+import pl.streamsoft.model.CurrencyRateUpdater;
 import pl.streamsoft.repository.CurrencyRateRepository;
-import pl.streamsoft.util.cache.CacheMap;
 import pl.streamsoft.util.cache.LRUSource;
 
 public class CurrencyConverter {
@@ -19,8 +19,8 @@ public class CurrencyConverter {
 
     public CurrencyConverter() {
 	this.currencyRateSources.add(LRUSource.lruCashMap);
-	this.currencyRateSources.add((CurrencyRateSource) LRUSource.lruCashMap);
 	this.currencyRateSources.add(new CurrencyRateRepository());
+	this.currencyRateSources.add(new ExternalCurrencyRateSource());
     }
 
     public CurrencyConverter(List<CurrencyRateSource> currencyRateSources) {
@@ -42,11 +42,11 @@ public class CurrencyConverter {
 
     private CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
 	CurrencyRate currencyRate = null;
-	int counter = currencyRateSources.size() -1 ;
+	int counter = currencyRateSources.size()-1 ;
 	for (CurrencyRateSource currencyRateSource : currencyRateSources) {
 
 	    try {
-		currencyRateSource.getCurrencyRate(currencyCode, dateOfConversion);
+		currencyRate =  currencyRateSource.getCurrencyRate(currencyCode, dateOfConversion);
 		
 		if (currencyRate != null)
 		    break;
@@ -60,6 +60,15 @@ public class CurrencyConverter {
 
 	    }
 	}
+	updateSources(currencyRate);
 	return currencyRate;
+    }
+    
+    private void updateSources(CurrencyRate currencyRate) {
+	currencyRateSources.forEach(crs -> {
+	    if(crs instanceof CurrencyRateUpdater) {
+		((CurrencyRateUpdater) crs).update(currencyRate);
+	    }
+	});
     }
 }

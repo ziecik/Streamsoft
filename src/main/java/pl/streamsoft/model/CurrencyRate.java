@@ -29,7 +29,7 @@ public class CurrencyRate {
 	this.code = code;
 	this.rateValue = rateValue;
 	this.dateOfAnnouncedRate = localDate;
-	this.id = code.toString() + dateOfAnnouncedRate.toString();
+	this.id = code.toString() + localDate.toString();
     }
 
     

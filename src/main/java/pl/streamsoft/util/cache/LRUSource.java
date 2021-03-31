@@ -6,9 +6,8 @@ import java.util.Optional;
 import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
-import pl.streamsoft.util.CurrencyRateSource;
 
-public class LRUSource extends LRU<String, CurrencyRate> implements CurrencyRateSource {
+public class LRUSource extends LRU<String, CurrencyRate> implements Cacheable {
 
     public static LRUSource lruCashMap = new LRUSource(5);
     
@@ -21,6 +20,11 @@ public class LRUSource extends LRU<String, CurrencyRate> implements CurrencyRate
 	// TODO Auto-generated method stub
 	CurrencyRate currencyRate = lruCashMap.get(currencyCode.toString() + dateOfConversion.toString());
 	return Optional.ofNullable(currencyRate).orElseThrow(() -> new DataNotFoundException("Data not found in LRUSource"));
+    }
+
+    @Override
+    public void update(CurrencyRate currencyRate) {
+	super.put(currencyRate.getId(), currencyRate);
     }
 
 }

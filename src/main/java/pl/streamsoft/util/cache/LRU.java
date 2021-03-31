@@ -23,18 +23,35 @@ public class LRU<K, V> {
 	return value;
     }
 
+    
+    // put - update
     public synchronized void put(K key, V value) {
 	if (map.contains(key))
 	    queue.remove(key);
 
-	if (queue.size() == size) {
+	while (queue.size() >= size) {
 	    K oldestKey = queue.poll();
 
 	    if (oldestKey != null) {
 		map.remove(oldestKey);
 	    }
+	}
 	    queue.add(key);
 	    map.put(key, value);
-	}
+	
     }
+
+    public int getSize() {
+        return size;
+    }
+
+    public ConcurrentLinkedQueue<K> getQueue() {
+        return queue;
+    }
+
+    public ConcurrentHashMap<K, V> getMap() {
+        return map;
+    }
+    
+    
 }
