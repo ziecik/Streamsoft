@@ -9,4 +9,5 @@ public interface GenericCahce<K, V> {
     boolean containsKey(K key);
     void cleanExpierdEntries();
     void clearAll();
+    boolean isEmpty();
 }

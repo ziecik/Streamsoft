@@ -1,4 +1,4 @@
-package pl.streamsoft.util.cache.old;
+package pl.streamsoft.util.cache.v1;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;

@@ -2,6 +2,9 @@ package test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.Test;
@@ -11,87 +14,85 @@ import pl.streamsoft.model.ConvertedAmount;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.util.CurrencyConverter;
-import pl.streamsoft.util.cache.LRUSource;
-import pl.streamsoft.util.cache.old.CacheMap;
+import pl.streamsoft.util.CurrencyRateSource;
+import pl.streamsoft.util.ExternalCurrencyRateSource;
+import pl.streamsoft.util.cache.v3.CurrencyRateCache;
 
 public class CacheTest {
 
     @Test
-    void should_addToCache_when_cachesIsEmpty() {	
+    void should_addToCache_when_cachesIsEmpty() {
 	// given:
-	CurrencyConverter currencyConverter = new CurrencyConverter();
+	CurrencyRateCache currencyRateCache = new CurrencyRateCache();
+	ExternalCurrencyRateSource externalCurrencyRateSource = new ExternalCurrencyRateSource();
+	List<CurrencyRateSource> currencyRateSources = new ArrayList<>();
+	currencyRateSources.add(currencyRateCache);
+	currencyRateSources.add(externalCurrencyRateSource);
+
+	CurrencyConverter currencyConverter = new CurrencyConverter(currencyRateSources);
+
 	CurrencyCode czk = CurrencyCode.CZK;
-	LocalDate date = LocalDate.of(2021, 3, 23);	
+	LocalDate date = LocalDate.of(2021, 3, 23);
 	BigDecimal valueToConvert = new BigDecimal("2000");
-	
+
 	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, czk, date);
-	Assertions.assertThat(LRUSource.lruCashMap.getMap().isEmpty());	
-	
+	Assertions.assertThat(currencyRateCache.isEmpty());
+
 	// when:
-	
+
 	ConvertedAmount convertedToPLN = currencyConverter.convertToPLN(amountDataToConvert);
-	
+
 	// then:
 	String key = czk + date.toString();
-	Assertions.assertThat(LRUSource.lruCashMap.get(key)).isEqualTo(convertedToPLN.getCurrencyRateUsedToConvertion());
+	Assertions.assertThat(currencyRateCache.get(key).get())
+		.isEqualTo(convertedToPLN.getCurrencyRateUsedToConvertion());
     }
 
     @Test
-    void should_takeFromCache_when_cahceIsNotEmpty() {
+    void should_takeFromCache_when_dataInCache() {
 	// given:
-	CurrencyConverter currencyConverter = new CurrencyConverter();
-	
-	CurrencyRate currencyRateAddedToCashe = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 23));
-	LRUSource.lruCashMap.put(currencyRateAddedToCashe.getId(), currencyRateAddedToCashe);
-	
+	CurrencyRateCache currencyRateCache = new CurrencyRateCache();
+	ExternalCurrencyRateSource externalCurrencyRateSource = new ExternalCurrencyRateSource();
+	List<CurrencyRateSource> currencyRateSources = new ArrayList<>();
+	currencyRateSources.add(currencyRateCache);
+	currencyRateSources.add(externalCurrencyRateSource);
+
+	CurrencyConverter currencyConverter = new CurrencyConverter(currencyRateSources);
+
+	Assertions.assertThat(currencyRateCache.isEmpty());
+
+	CurrencyRate currencyRateAddedToCashe = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"),
+		LocalDate.of(2021, 3, 23));
+	currencyRateCache.put(currencyRateAddedToCashe.getId(), currencyRateAddedToCashe);
+
 	// when:
-	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(new BigDecimal("100"), CurrencyCode.EUR, LocalDate.of(2021, 3, 23));
+	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(new BigDecimal("100"), CurrencyCode.EUR,
+		LocalDate.of(2021, 3, 23));
 	ConvertedAmount convertedToPLN = currencyConverter.convertToPLN(amountDataToConvert);
-	
+
 	// then:
-	
-	Assertions.assertThat(convertedToPLN.getCurrencyRateUsedToConvertion()).isEqualTo(LRUSource.lruCashMap.get("EUR2021-03-23"));
-    }
-    
-    
-    @Test
-    void should_removeOldestValeu_when_addToFullCache() {	
-	// given:
-	CurrencyConverter currencyConverter = new CurrencyConverter();
-	CurrencyCode czk = CurrencyCode.CZK;
-	LocalDate sunday = LocalDate.of(2021, 3, 7);	
-	BigDecimal valueToConvert = new BigDecimal("2000");
-	
-	makingCacheFull();
-		
-	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, czk, sunday);
-		
-	// when:
-	
-	ConvertedAmount convertedToPLN = currencyConverter.convertToPLN(amountDataToConvert);
-	
-	// then:
-	LocalDate friday = sunday.minusDays(2);
-	String key = czk + friday.toString();
-	Assertions.assertThat(LRUSource.lruCashMap.get(key)).isEqualTo(convertedToPLN.getCurrencyRateUsedToConvertion());
-//	Assertions.assertThat(LRUSource.lruCashMap.get("CZK2021-03-23")).isEqualTo(null);
-	System.out.println(LRUSource.lruCashMap.getMap().size());
+
+	Assertions.assertThat(convertedToPLN.getCurrencyRateUsedToConvertion())
+		.isEqualTo(currencyRateCache.get("EUR2021-03-23").get());
     }
 
-    private void makingCacheFull() {
-	CurrencyRate currency1 = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 23));
-	CurrencyRate currency2 = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 24));
-	CurrencyRate currency3 = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 25));
-	CurrencyRate currency4 = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 26));
-	CurrencyRate currency5 = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 27));
-	CurrencyRate currency6 = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"), LocalDate.of(2021, 3, 28));
+    @Test
+    void should_removeValueFromCache_when_keyExpired() throws InterruptedException {
+	// given:
+	CurrencyRate currencyRate = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"),
+		LocalDate.now());
+	String id = currencyRate.getId();
+
+	CurrencyRateCache currencyRateCache = new CurrencyRateCache(3000);
+
+	// when:
 	
-	LRUSource.lruCashMap.put(currency1.getId(), currency1);
-	LRUSource.lruCashMap.put(currency2.getId(), currency2);
-	LRUSource.lruCashMap.put(currency3.getId(), currency3);
-	LRUSource.lruCashMap.put(currency4.getId(), currency4);
-	LRUSource.lruCashMap.put(currency5.getId(), currency5);
-//	LRUSource.lruCashMap.put(currency6.getId(), currency6);
+	currencyRateCache.put(id, currencyRate);
+	 
+	Thread.sleep(3000);
+
+	// then:
+	Assertions.assertThat(currencyRateCache.get(id)).isEqualTo(Optional.empty());
     }
-    
+
 }

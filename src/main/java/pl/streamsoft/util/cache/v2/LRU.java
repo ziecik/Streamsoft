@@ -1,4 +1,4 @@
-package pl.streamsoft.util.cache;
+package pl.streamsoft.util.cache.v2;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;

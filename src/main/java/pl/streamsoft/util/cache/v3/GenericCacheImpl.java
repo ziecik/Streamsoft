@@ -13,25 +13,27 @@ public class GenericCacheImpl<K, V> implements GenericCahce<K, V> {
     public static final long DEFAULT_CACHE_TIMEOUT = 60 * 1000L;
     private long cacheTimeout;
 
-    private Map<K, CacheValue<V>> cacheMap = new ConcurrentHashMap<K, CacheValue<V>>();
+    private Map<K, CacheValue<V>> cacheMap;
 
     public GenericCacheImpl() {
 	this.cacheTimeout = DEFAULT_CACHE_TIMEOUT;
+	clearAll();
     }
 
     public GenericCacheImpl(long cacheTimeout) {
 	this.cacheTimeout = cacheTimeout;
+	clearAll();
     }
 
     @Override
-    public void put(K key, V value) {
+    public synchronized void put(K key, V value) {
 	cacheMap.put(key, createCacheValue(value));
     }
 
     @Override
-    public Optional<V> get(K key) {
+    public synchronized Optional<V> get(K key) {
 	cleanExpierdEntries();
-	return Optional.ofNullable(cacheMap.get(key).getValue());
+	return Optional.ofNullable(cacheMap.get(key)).map(CacheValue::getValue);
     }
 
     @Override
@@ -80,6 +82,11 @@ public class GenericCacheImpl<K, V> implements GenericCahce<K, V> {
 	    }
 	};
 
+    }
+
+    @Override
+    public boolean isEmpty() {
+	return cacheMap.isEmpty();
     }
 
 }

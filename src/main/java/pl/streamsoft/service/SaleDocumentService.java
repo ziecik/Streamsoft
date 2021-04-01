@@ -9,7 +9,7 @@ import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.repository.CurrencyRateRepository;
 import pl.streamsoft.util.CurrencyConverter;
-import pl.streamsoft.util.cache.LRUSource;
+import pl.streamsoft.util.cache.v2.LRUSource;
 
 public class SaleDocumentService {
 

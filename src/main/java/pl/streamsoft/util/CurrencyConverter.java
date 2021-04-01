@@ -11,7 +11,7 @@ import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.model.CurrencyRateUpdater;
 import pl.streamsoft.repository.CurrencyRateRepository;
-import pl.streamsoft.util.cache.LRUSource;
+import pl.streamsoft.util.cache.v2.LRUSource;
 import pl.streamsoft.util.cache.v3.CurrencyRateCache;
 
 public class CurrencyConverter {
@@ -19,10 +19,9 @@ public class CurrencyConverter {
     private List<CurrencyRateSource> currencyRateSources = new ArrayList<>();
 
     public CurrencyConverter() {
-//	this.currencyRateSources.add(new CurrencyRateCache());
-	this.currencyRateSources.add(LRUSource.lruCashMap);
-	this.currencyRateSources.add(new CurrencyRateRepository());
-	this.currencyRateSources.add(new ExternalCurrencyRateSource());
+	this.currencyRateSources.add(new CurrencyRateCache());
+//	this.currencyRateSources.add(new CurrencyRateRepository());
+//	this.currencyRateSources.add(new ExternalCurrencyRateSource());
     }
 
     public CurrencyConverter(List<CurrencyRateSource> currencyRateSources) {
