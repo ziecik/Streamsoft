@@ -17,7 +17,6 @@ public class LRUSource extends LRU<String, CurrencyRate> implements Cacheable {
 
     @Override
     public CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
-	// TODO Auto-generated method stub
 	CurrencyRate currencyRate = lruCashMap.get(currencyCode.toString() + dateOfConversion.toString());
 	return Optional.ofNullable(currencyRate).orElseThrow(() -> new DataNotFoundException("Data not found in LRUSource"));
     }

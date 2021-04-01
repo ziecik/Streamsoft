@@ -16,7 +16,7 @@ public class CurrencyRate {
     private String currencyName;
     @Enumerated(EnumType.STRING)
     private CurrencyCode code;
-    @Column(columnDefinition = "Decimal(5,4)")
+    @Column(columnDefinition = "Decimal(10,4)")
     private BigDecimal rateValue;
     private LocalDate dateOfAnnouncedRate;
     private String providerName = "unknown";

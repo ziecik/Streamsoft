@@ -14,15 +14,16 @@ import pl.streamsoft.util.cache.LRUSource;
 public class SaleDocumentService {
 
     public void insert() {
-	
+
 	BigDecimal valueToConvert = new BigDecimal("1499.99");
 	CurrencyCode code = CurrencyCode.USD;
-	LocalDate date = LocalDate.of(2021,3,31);
-	
-	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, code,
-		date);
+	LocalDate date = LocalDate.of(2021, 3, 31);
 
-	ConvertedAmount amount1 = new CurrencyConverter().convertToPLN(amountDataToConvert);
-	
+	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, code, date);
+
+	CurrencyConverter currencyConverter = new CurrencyConverter();
+	ConvertedAmount amount1 = currencyConverter.convertToPLN(amountDataToConvert);
+
+
     }
 }
