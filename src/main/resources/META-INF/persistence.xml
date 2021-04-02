@@ -5,7 +5,8 @@
              version="2.1">
 
     <persistence-unit name="dbCurrencyConnection" transaction-type="RESOURCE_LOCAL">
-
+		<class>java.math.BigDecimal.CurrencyRate</class>
+		
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" /> <!-- DB Driver -->
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost/dbCurrency" /> <!-- BD Mane -->

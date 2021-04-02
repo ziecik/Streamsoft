@@ -1,9 +1,5 @@
 package pl.streamsoft.model;
 
-import javax.persistence.Entity;
-
-import org.hibernate.annotations.NaturalIdCache;
-
 public enum CurrencyCode {
 	THB
 	, USD

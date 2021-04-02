@@ -8,17 +8,23 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity
+@Entity(name = "currencyrate")
+@Table(name = "currencyrate")
 public class CurrencyRate {
     @Id
+    @Column(name = "Id")
     private String id;
+    @Column(name = "currencyname")
     private String currencyName;
     @Enumerated(EnumType.STRING)
     private CurrencyCode code;
-    @Column(columnDefinition = "Decimal(10,4)")
+    @Column(columnDefinition = "Decimal(10,4)", name = "ratevalue")
     private BigDecimal rateValue;
+    @Column(name = "dateofannouncedrate")
     private LocalDate dateOfAnnouncedRate;
+    @Column(name = "providername")
     private String providerName = "unknown";
     
     public CurrencyRate() {
@@ -79,6 +85,12 @@ public class CurrencyRate {
 
     public void setProviderName(String providerName) {
 	this.providerName = providerName;
+    }
+
+    @Override
+    public String toString() {
+	return "CurrencyRate [id=" + id + ", currencyName=" + currencyName + ", code=" + code + ", rateValue="
+		+ rateValue + ", dateOfAnnouncedRate=" + dateOfAnnouncedRate + ", providerName=" + providerName + "]";
     }
     
     

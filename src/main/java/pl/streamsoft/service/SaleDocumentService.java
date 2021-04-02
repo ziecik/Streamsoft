@@ -17,7 +17,7 @@ public class SaleDocumentService {
 
 	BigDecimal valueToConvert = new BigDecimal("1499.99");
 	CurrencyCode code = CurrencyCode.USD;
-	LocalDate date = LocalDate.of(2021, 3, 31);
+	LocalDate date = LocalDate.of(2009, 3, 31);
 
 	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, code, date);
 

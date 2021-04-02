@@ -11,7 +11,6 @@ import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.model.CurrencyRateUpdater;
 import pl.streamsoft.repository.CurrencyRateRepository;
-import pl.streamsoft.util.cache.v2.LRUSource;
 import pl.streamsoft.util.cache.v3.CurrencyRateCache;
 
 public class CurrencyConverter {
@@ -20,8 +19,8 @@ public class CurrencyConverter {
 
     public CurrencyConverter() {
 	this.currencyRateSources.add(new CurrencyRateCache());
-//	this.currencyRateSources.add(new CurrencyRateRepository());
-//	this.currencyRateSources.add(new ExternalCurrencyRateSource());
+	this.currencyRateSources.add(new CurrencyRateRepository());
+	this.currencyRateSources.add(new ExternalCurrencyRateSource());
     }
 
     public CurrencyConverter(List<CurrencyRateSource> currencyRateSources) {
@@ -40,7 +39,7 @@ public class CurrencyConverter {
 	return convertedAmount;
 
     }
-
+    
     private CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
 	CurrencyRate currencyRate = null;
 	int counter = currencyRateSources.size()-1 ;
@@ -51,12 +50,13 @@ public class CurrencyConverter {
 		
 		if (currencyRate != null)
 		    break;
-		else
-		    throw new DataNotFoundException("Data not found in used currency source");
+//		else
+//		    throw new DataNotFoundException("Data not found in used currency source");
 	    } catch (DataNotFoundException e) {
 		if (counter-- == 0) {
 		    throw new DataNotFoundException(
-			    "There is no data in any known source", e);
+			    "There is no data in any source", e);
+		  
 		}
 
 	    }
