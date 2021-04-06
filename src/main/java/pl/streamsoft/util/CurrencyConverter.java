@@ -16,6 +16,7 @@ import pl.streamsoft.util.cache.v3.CurrencyRateCache;
 public class CurrencyConverter {
 
     private List<CurrencyRateSource> currencyRateSources = new ArrayList<>();
+    private List<CurrencyRateUpdater> currencyRateUpdaters = new ArrayList<>();
 
     public CurrencyConverter() {
 	this.currencyRateSources.add(new CurrencyRateCache());
@@ -50,8 +51,8 @@ public class CurrencyConverter {
 		
 		if (currencyRate != null)
 		    break;
-//		else
-//		    throw new DataNotFoundException("Data not found in used currency source");
+		else if(currencyRateSource instanceof CurrencyRateUpdater)
+		    currencyRateUpdaters.add((CurrencyRateUpdater) currencyRateSource);
 	    } catch (DataNotFoundException e) {
 		if (counter-- == 0) {
 		    throw new DataNotFoundException(
@@ -66,10 +67,6 @@ public class CurrencyConverter {
     }
     
     private void updateSources(CurrencyRate currencyRate) {
-	currencyRateSources.forEach(crs -> {
-	    if(crs instanceof CurrencyRateUpdater) {
-		((CurrencyRateUpdater) crs).update(currencyRate);
-	    }
-	});
+	currencyRateUpdaters.forEach(crs -> crs.update(currencyRate));
     }
 }

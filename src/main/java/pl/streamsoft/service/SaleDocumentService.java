@@ -19,7 +19,7 @@ public class SaleDocumentService {
 	CurrencyCode code = CurrencyCode.USD;
 	LocalDate date = LocalDate.of(2009, 3, 31);
 
-	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, code, date);
+	AmountDataToConvert amountDataToConvert = new AmountDataToConvert(valueToConvert, code, LocalDate.now());
 
 	CurrencyConverter currencyConverter = new CurrencyConverter();
 	ConvertedAmount amount1 = currencyConverter.convertToPLN(amountDataToConvert);
