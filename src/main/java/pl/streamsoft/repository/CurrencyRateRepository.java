@@ -1,16 +1,22 @@
 package pl.streamsoft.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import pl.streamsoft.dto.Period;
+import pl.streamsoft.dto.RateDifference;
 import pl.streamsoft.exception.DataNotFoundException;
 import pl.streamsoft.model.CurrencyCode;
+import pl.streamsoft.model.CurrencyInfo;
 import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.model.CurrencyRateUpdater;
 import pl.streamsoft.util.CurrencyRateSource;
@@ -27,14 +33,22 @@ public class CurrencyRateRepository
     public void add(CurrencyRate entity) {
 	beginTransaction();
 	entityManager.persist(entity);
+	CurrencyInfo find2 = new CurrencyInfoRepository().find(entity.getCurrencyRateInfo().getCode());
+	if (find2 == null)
+	    entityManager.persist(entity.getCurrencyRateInfo());
 	closeTransaction();
     }
 
     @Override
     public void remove(String id) {
 	beginTransaction();
-	CurrencyRate find = entityManager.find(CurrencyRate.class, id);
-	entityManager.remove(find);
+//	CurrencyRate find = entityManager.find(CurrencyRate.class, id);
+//	entityManager.remove(find);
+//	
+	Query deleteQuery = entityManager.createQuery("delete from CurrencyRate c where c.id = :id");
+	deleteQuery.setParameter("id", id);
+
+	deleteQuery.executeUpdate();
 	closeTransaction();
     }
 
@@ -54,62 +68,106 @@ public class CurrencyRateRepository
 	    find.setRateValue(entity.getRateValue());
 	} else {
 	    entityManager.persist(entity);
+	    CurrencyInfo find2 = new CurrencyInfoRepository().find(entity.getCurrencyRateInfo().getCode());
+	    if (find2 == null)
+		entityManager.persist(entity.getCurrencyRateInfo());
 	}
 	closeTransaction();
     }
 
-    // find max value in period
-    public List<CurrencyRate> findCurrencyRateWithMaxValueBetween(LocalDate start, LocalDate end) {
+//	find max value in period
+//	#2
+    public List<CurrencyRate> findCurrencyRateWithMaxValueBetween(LocalDate start, LocalDate end, CurrencyCode code) {
 	beginTransaction();
 
 	String sqlQuery = "\r\n"
-		+ "select c from currencyrate c where ratevalue in (select max(x.rateValue) as maxval from currencyrate x \r\n"
-		+ "where dateofannouncedrate between :start and :end  group by code, currencyname) order by ratevalue desc ";
+		+ "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code and ratevalue in (select max(x.rateValue) from CurrencyRate x \r\n"
+		+ "where dateofannouncedrate between :start and :end  group by code) order by ratevalue desc ";
 
 	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
 	query.setParameter("start", start);
 	query.setParameter("end", end);
+	query.setParameter("code", code);
 //	
-	List<CurrencyRate> currencyRates = query.setMaxResults(5).getResultList();
+	List<CurrencyRate> currencyRates = query.getResultList();
 
 	closeTransaction();
 	return currencyRates;
     }
 
-    // find minimum value in period
-    public List<CurrencyRate> findCurrencyRateWithMinValueBetween(LocalDate start, LocalDate end) {
+//	max difference in period
+//	#1
+    public List<RateDifference> findCurrencyRateWithMaxDifferenceValueBetween(LocalDate start, LocalDate end,
+	    int limit) {
 	beginTransaction();
 
-	String sqlQuery = "\r\n"
-		+ "select c from currencyrate c where ratevalue in (select min(x.rateValue) from currencyrate x \r\n"
-		+ "where dateofannouncedrate between :start and :end  group by code, currencyname) order by ratevalue asc ";
+	String sqlQuery = "select i.code, i.currencyName, max(c.rateValue)- min(c.rateValue) from CurrencyRate c join CurrencyInfo i on c.currencyInfo = i where dateOfAnnouncedRate between :start and :end  group by i.code order by max(c.rateValue)-min(c.rateValue) desc";
 
-	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
-	query.setParameter("start", start);
-	query.setParameter("end", end);
-//	
-	List<CurrencyRate> currencyRates = query.setMaxResults(5).getResultList();
-
-	closeTransaction();
-	return currencyRates;
-    }
-
-//    max difference in period
-
-    public List<Object[]> findCurrencyRateWithMaxDifferenceValueBetween(LocalDate start, LocalDate end) {
-	beginTransaction();
-	
-	
-	String sqlQuery = "select code, max(c.rateValue)- min(c.rateValue) from currencyrate c where dateofannouncedrate between :start and :end  group by c.code order by max(c.rateValue)-min(c.rateValue) desc";
-
-	
 	TypedQuery<Object[]> query = entityManager.createQuery(sqlQuery, Object[].class);
 	query.setParameter("start", start);
 	query.setParameter("end", end);
+
+	List<Object[]> currencyRates = query.setMaxResults(limit).getResultList();
+
+	List<RateDifference> differences = new ArrayList<>();
+	Period period = new Period(start, end);
+	for (Object[] objects : currencyRates) {
+	    differences.add(new RateDifference((CurrencyCode) objects[0], (String) objects[1], (BigDecimal) objects[2],
+		    period));
+	}
+
+	closeTransaction();
+	return differences;
+    }
+
+//	find minimum value in period
+//	#2
+    public List<CurrencyRate> findCurrencyRateWithMinValueBetween(LocalDate start, LocalDate end, CurrencyCode code) {
+	beginTransaction();
+
+	String sqlQuery = "\r\n"
+		+ "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code and ratevalue in (select min(x.rateValue) as minval from CurrencyRate x \r\n"
+		+ "where dateofannouncedrate between :start and :end  group by code) order by ratevalue asc ";
+
+	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
+	query.setParameter("start", start);
+	query.setParameter("end", end);
+	query.setParameter("code", code);
 //	
-	List<Object[]> currencyRates = query.setMaxResults(5).getResultList();  
-		 
+	List<CurrencyRate> currencyRates = query.getResultList();
+
+	closeTransaction();
+	return currencyRates;
+    }
+
+    public List<CurrencyRate> find5BestRatesForCurrency(CurrencyCode code) {
+	beginTransaction();
+	String sqlQuery = "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code \r\n"
+		+ "  order by ratevalue desc";
 	
+
+	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
+
+	query.setParameter("code", code);
+	
+	List<CurrencyRate> currencyRates = query.setMaxResults(5).getResultList();
+
+	closeTransaction();
+	return currencyRates;
+    }
+    
+    public List<CurrencyRate> find5BestWorstForCurrency(CurrencyCode code) {
+	beginTransaction();
+	String sqlQuery = "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code \r\n"
+		+ "  order by ratevalue";
+	
+
+	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
+
+	query.setParameter("code", code);
+	
+	List<CurrencyRate> currencyRates = query.setMaxResults(5).getResultList();
+
 	closeTransaction();
 	return currencyRates;
     }

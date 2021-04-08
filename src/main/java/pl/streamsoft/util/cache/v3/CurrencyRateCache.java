@@ -10,7 +10,7 @@ import pl.streamsoft.util.cache.v2.Cacheable;
 public class CurrencyRateCache extends GenericCacheImpl<String, CurrencyRate> implements Cacheable {   
     
     public CurrencyRateCache() {
-	super();	
+		
     }
 
     public CurrencyRateCache(long cacheTimeout) {

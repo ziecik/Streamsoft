@@ -5,21 +5,22 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Entity(name = "currencyrate")
-@Table(name = "currencyrate")
+@Entity
+@Table
 public class CurrencyRate {
     @Id
     @Column(name = "Id")
     private String id;
-    @Column(name = "currencyname")
-    private String currencyName;
-    @Enumerated(EnumType.STRING)
-    private CurrencyCode code;
+   
+    @ManyToOne
+    @JoinColumn(name = "code")
+    private CurrencyInfo currencyInfo;
+
     @Column(columnDefinition = "Decimal(10,4)", name = "ratevalue")
     private BigDecimal rateValue;
     @Column(name = "dateofannouncedrate")
@@ -31,8 +32,7 @@ public class CurrencyRate {
     }
 
     public CurrencyRate(String currencyName, CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
-	this.currencyName = currencyName;
-	this.code = code;
+	this.currencyInfo = new CurrencyInfo(code, currencyName);
 	this.rateValue = rateValue;
 	this.dateOfAnnouncedRate = localDate;
 	this.id = code.toString() + localDate.toString();
@@ -43,28 +43,12 @@ public class CurrencyRate {
         return id;
     }
 
-    public String getCurrencyName() {
-	return currencyName;
-    }
-
-    public CurrencyCode getCode() {
-	return code;
-    }
-
     public BigDecimal getRateValue() {
 	return rateValue;
     }
 
     public LocalDate getDateOfAnnouncedRate() {
 	return dateOfAnnouncedRate;
-    }
-
-    public void setCurrencyName(String currencyName) {
-        this.currencyName = currencyName;
-    }
-
-    public void setCode(CurrencyCode code) {
-        this.code = code;
     }
 
     public void setRateValue(BigDecimal rateValue) {
@@ -86,10 +70,18 @@ public class CurrencyRate {
     public void setProviderName(String providerName) {
 	this.providerName = providerName;
     }
+  
+    public CurrencyInfo getCurrencyRateInfo() {
+        return currencyInfo;
+    }
+
+    public void setCurrencyRateInfo(CurrencyInfo currencyRateInfo) {
+        this.currencyInfo = currencyRateInfo;
+    }
 
     @Override
     public String toString() {
-	return "CurrencyRate [id=" + id + ", currencyName=" + currencyName + ", code=" + code + ", rateValue="
+	return "CurrencyRate [id=" + id + ", currencyName=" + currencyInfo.getCurrencyName() + ", code=" + currencyInfo.getCode() + ", rateValue="
 		+ rateValue + ", dateOfAnnouncedRate=" + dateOfAnnouncedRate + ", providerName=" + providerName + "]";
     }
     

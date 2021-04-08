@@ -40,33 +40,34 @@ public class CurrencyConverter {
 	return convertedAmount;
 
     }
-    
+
     private CurrencyRate getCurrencyRate(CurrencyCode currencyCode, LocalDate dateOfConversion) {
 	CurrencyRate currencyRate = null;
-	int counter = currencyRateSources.size()-1 ;
+	int counter = currencyRateSources.size() - 1;
 	for (CurrencyRateSource currencyRateSource : currencyRateSources) {
 
 	    try {
-		currencyRate =  currencyRateSource.getCurrencyRate(currencyCode, dateOfConversion);
-		
+		currencyRate = currencyRateSource.getCurrencyRate(currencyCode, dateOfConversion);
+
 		if (currencyRate != null)
 		    break;
-		else if(currencyRateSource instanceof CurrencyRateUpdater)
-		    currencyRateUpdaters.add((CurrencyRateUpdater) currencyRateSource);
+
 	    } catch (DataNotFoundException e) {
 		if (counter-- == 0) {
-		    throw new DataNotFoundException(
-			    "There is no data in any source", e);
-		  
+		    throw new DataNotFoundException("There is no data in any source", e);
+
 		}
 
+	    }
+	    if(currencyRateSource instanceof CurrencyRateUpdater) {
+		currencyRateUpdaters.add((CurrencyRateUpdater) currencyRateSource);
 	    }
 	}
 	updateSources(currencyRate);
 	return currencyRate;
     }
-    
-    private void updateSources(CurrencyRate currencyRate) {
-	currencyRateUpdaters.forEach(crs -> crs.update(currencyRate));
+
+    private void updateSources(CurrencyRate currencyRate) {	
+	currencyRateUpdaters.forEach(cru -> cru.update(currencyRate));
     }
 }
