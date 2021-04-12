@@ -3,6 +3,7 @@ package pl.streamsoft.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,7 +20,7 @@ public class CurrencyRate {
     @Column(name = "Id")
     private String id;
    
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "code")
     private CurrencyInfo currencyInfo;
 
@@ -33,14 +34,23 @@ public class CurrencyRate {
     public CurrencyRate() {
     }
 
-    public CurrencyRate(String currencyName, CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
-	this.currencyInfo = new CurrencyInfo(code, currencyName);
+    public CurrencyRate(CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
+	this.currencyInfo = new CurrencyInfo(code);
 	this.rateValue = rateValue;
 	this.dateOfAnnouncedRate = localDate;
 	this.id = code.toString() + localDate.toString();
     }
 
+     
     
+    public CurrencyRate(CurrencyInfo currencyInfo, BigDecimal rateValue, LocalDate dateOfAnnouncedRate) {
+	super();
+	this.currencyInfo = currencyInfo;
+	this.rateValue = rateValue;
+	this.dateOfAnnouncedRate = dateOfAnnouncedRate;
+	this.id = currencyInfo.getCode().toString() + dateOfAnnouncedRate.toString();
+    }
+
     public String getId() {
         return id;
     }

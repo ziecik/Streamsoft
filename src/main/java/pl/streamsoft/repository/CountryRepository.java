@@ -1,12 +1,13 @@
 package pl.streamsoft.repository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+
+import org.hibernate.Session;
 
 import pl.streamsoft.model.Country;
 import pl.streamsoft.model.CurrencyCode;
@@ -16,6 +17,23 @@ public class CountryRepository implements Repository<Country, Long> {
 
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
+    private String persistenceUnitName;
+
+    
+    
+    public CountryRepository() {
+	super();
+	this.persistenceUnitName = "dbCurrencyConnection";
+    }
+    
+    
+
+    public CountryRepository(String persistenceUnitName) {
+	super();
+	this.persistenceUnitName = persistenceUnitName;
+    }
+
+
 
     public void add(Country entity, CurrencyCode code) {
   	beginTransaction();
@@ -27,10 +45,23 @@ public class CountryRepository implements Repository<Country, Long> {
   	closeTransaction();
       }
     
+    public void addCurrency(Long id, CurrencyCode code) {
+	beginTransaction();
+	
+	Country country = entityManager.find(Country.class, id);
+	CurrencyInfo currencyInfo = entityManager.find(CurrencyInfo.class, code);
+	
+	currencyInfo.getCountries().add(country);
+	
+//	country.addCurrency(currencyInfo);
+	
+	closeTransaction();
+    }
+    
     @Override
     public void add(Country entity) {
 	beginTransaction();
-
+	entityManager.persist(entity);
 	
 	
 	closeTransaction();
@@ -38,25 +69,50 @@ public class CountryRepository implements Repository<Country, Long> {
 
     @Override
     public void remove(Long id) {
-	// TODO Auto-generated method stub
-
+	beginTransaction();
+	Country find;
+	if((find = entityManager.find(Country.class, id)) != null)
+	    entityManager.remove(find);
+	closeTransaction();
     }
 
     @Override
     public Country find(Long id) {
-	// TODO Auto-generated m stub
-	return null;
+	Country country = entityManager.find(Country.class, id);
+	return country;
     }
 
     @Override
     public void update(Long id, Country entity) {
-	// TODO Auto-generated method stub
+	beginTransaction();
+	
+	Country find = find(id);
+	entityManager.detach(find);
+	
+	entityManager.merge(find);
+	
+	closeTransaction();
 
     }
 
+//    #4
+    public List<Country> findCountriesWithTwoOrMoreCurrencies() {
+	beginTransaction();
+	
+	String query = "select c from Country c join fetch c. currencies where size(c.currencies) >= 2";
+	
+	TypedQuery<Country> createQuery = entityManager.createQuery(query, Country.class);
+	List<Country> countreis = createQuery.getResultList();
+	
+	closeTransaction();
+	return countreis;
+	
+    }
+    
 
     private void beginTransaction() {
-	entityManagerFactory = Persistence.createEntityManagerFactory("dbCurrencyConnection");
+	
+	entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 	entityManager = entityManagerFactory.createEntityManager();
 	entityManager.getTransaction().begin();
     }

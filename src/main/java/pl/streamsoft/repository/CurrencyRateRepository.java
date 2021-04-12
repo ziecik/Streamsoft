@@ -25,9 +25,16 @@ public class CurrencyRateRepository
 	implements Repository<CurrencyRate, String>, CurrencyRateSource, CurrencyRateUpdater {
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
+    String persistenceUnitName;
 
     public CurrencyRateRepository() {
-	
+	this.persistenceUnitName = "dbCurrencyConnection";
+	entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
+    }
+
+    public CurrencyRateRepository(String persistenceUnitName) {
+	super();
+	this.persistenceUnitName = persistenceUnitName;
     }
 
     @Override
@@ -35,8 +42,13 @@ public class CurrencyRateRepository
 	beginTransaction();
 	entityManager.persist(entity);
 	CurrencyInfo find2 = new CurrencyInfoRepository().find(entity.getCurrencyRateInfo().getCode());
-	if (find2 == null)
-	    entityManager.persist(entity.getCurrencyRateInfo());
+	if (find2 != null)
+	    entity.setCurrencyRateInfo(find2);
+		
+//	else {
+//	    entityManager.persist(entity);
+//	    entity.setCurrencyRateInfo(find2);
+//	}
 	closeTransaction();
     }
 
@@ -68,32 +80,9 @@ public class CurrencyRateRepository
 	if (find != null) {
 	    find.setRateValue(entity.getRateValue());
 	} else {
-	    entityManager.persist(entity);
-	    CurrencyInfo find2 = new CurrencyInfoRepository().find(entity.getCurrencyRateInfo().getCode());
-	    if (find2 == null)
-		entityManager.persist(entity.getCurrencyRateInfo());
+	   add(entity);
 	}
 	closeTransaction();
-    }
-
-//	find max value in period
-//	#2
-    public List<CurrencyRate> findCurrencyRateWithMaxValueBetween(LocalDate start, LocalDate end, CurrencyCode code) {
-	beginTransaction();
-
-	String sqlQuery = "\r\n"
-		+ "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code and ratevalue in (select max(x.rateValue) from CurrencyRate x \r\n"
-		+ "where dateofannouncedrate between :start and :end  group by code) order by ratevalue desc ";
-
-	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
-	query.setParameter("start", start);
-	query.setParameter("end", end);
-	query.setParameter("code", code);
-//	
-	List<CurrencyRate> currencyRates = query.getResultList();
-
-	closeTransaction();
-	return currencyRates;
     }
 
 //	max difference in period
@@ -141,34 +130,52 @@ public class CurrencyRateRepository
 	return currencyRates;
     }
 
+//	find max value in period
+//	#2
+    public List<CurrencyRate> findCurrencyRateWithMaxValueBetween(LocalDate start, LocalDate end, CurrencyCode code) {
+	beginTransaction();
+
+	String sqlQuery = "\r\n"
+		+ "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code and ratevalue in (select max(x.rateValue) from CurrencyRate x \r\n"
+		+ "where dateofannouncedrate between :start and :end  group by code) order by ratevalue desc ";
+
+	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
+	query.setParameter("start", start);
+	query.setParameter("end", end);
+	query.setParameter("code", code);
+//	
+	List<CurrencyRate> currencyRates = query.getResultList();
+
+	closeTransaction();
+	return currencyRates;
+    }
+
 //	#3
     public List<CurrencyRate> find5BestRatesForCurrency(CurrencyCode code) {
 	beginTransaction();
 	String sqlQuery = "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code \r\n"
 		+ "  order by ratevalue desc";
-	
 
 	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
 
 	query.setParameter("code", code);
-	
+
 	List<CurrencyRate> currencyRates = query.setMaxResults(5).getResultList();
 
 	closeTransaction();
 	return currencyRates;
     }
-    
+
 //	#3
     public List<CurrencyRate> find5BestWorstForCurrency(CurrencyCode code) {
 	beginTransaction();
 	String sqlQuery = "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code \r\n"
 		+ "  order by ratevalue";
-	
 
 	TypedQuery<CurrencyRate> query = entityManager.createQuery(sqlQuery, CurrencyRate.class);
 
 	query.setParameter("code", code);
-	
+
 	List<CurrencyRate> currencyRates = query.setMaxResults(5).getResultList();
 
 	closeTransaction();
@@ -176,7 +183,7 @@ public class CurrencyRateRepository
     }
 
     private void beginTransaction() {
-	entityManagerFactory = Persistence.createEntityManagerFactory("dbCurrencyConnection");
+	entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 	entityManager = entityManagerFactory.createEntityManager();
 	entityManager.getTransaction().begin();
     }

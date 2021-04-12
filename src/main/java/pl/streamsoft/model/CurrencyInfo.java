@@ -33,6 +33,11 @@ public class CurrencyInfo {
 
     public CurrencyInfo() {
     }
+   
+    public CurrencyInfo(CurrencyCode code) {
+	super();
+	this.code = code;
+    }
 
     public CurrencyInfo(CurrencyCode code, String currencyName) {
 	this.code = code;

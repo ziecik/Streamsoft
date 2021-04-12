@@ -11,13 +11,26 @@ public class CurrencyInfoRepository implements Repository<CurrencyInfo, Currency
 
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
+    private String persistenceUnitName;
+
+    public CurrencyInfoRepository() {
+	super();
+	this.persistenceUnitName = "dbCurrencyConnection";
+	// TODO Auto-generated constructor stub
+    }
+
+    public CurrencyInfoRepository(String persistenceUnitName) {
+	super();
+	this.persistenceUnitName = persistenceUnitName;
+    }
 
     @Override
     public void add(CurrencyInfo entity) {
 	beginTransaction();
-	if(
-	entityManager.find(CurrencyInfo.class, entity) != null)
-	entityManager.persist(entity);
+	CurrencyInfo find = entityManager.find(CurrencyInfo.class, entity.getCode());
+	if (find == null) {
+	    entityManager.persist(entity);
+	}
 	closeTransaction();
     }
 
@@ -45,10 +58,9 @@ public class CurrencyInfoRepository implements Repository<CurrencyInfo, Currency
 	entityManager.persist(find);
 	closeTransaction();
     }
-    
-    
+
     private void beginTransaction() {
-	entityManagerFactory = Persistence.createEntityManagerFactory("dbCurrencyConnection");
+	entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 	entityManager = entityManagerFactory.createEntityManager();
 	entityManager.getTransaction().begin();
     }
