@@ -61,7 +61,7 @@ public class CacheTest {
 
 	Assertions.assertThat(currencyRateCache.isEmpty());
 
-	CurrencyRate currencyRateAddedToCashe = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"),
+	CurrencyRate currencyRateAddedToCashe = new CurrencyRate(CurrencyCode.EUR, new BigDecimal("4.4444"),
 		LocalDate.of(2021, 3, 23));
 	currencyRateCache.put(currencyRateAddedToCashe.getId(), currencyRateAddedToCashe);
 
@@ -79,7 +79,7 @@ public class CacheTest {
     @Test
     void should_removeValueFromCache_when_keyExpired() throws InterruptedException {
 	// given:
-	CurrencyRate currencyRate = new CurrencyRate("euro", CurrencyCode.EUR, new BigDecimal("4.4444"),
+	CurrencyRate currencyRate = new CurrencyRate( CurrencyCode.EUR, new BigDecimal("4.4444"),
 		LocalDate.now());
 	String id = currencyRate.getId();
 

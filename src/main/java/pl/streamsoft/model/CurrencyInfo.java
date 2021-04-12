@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -23,7 +24,7 @@ public class CurrencyInfo {
     @Column(name = "currencyname")
     private String currencyName;
 
-    @OneToMany(mappedBy = "currencyInfo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "currencyInfo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CurrencyRate> currencyRates;
 
     @ManyToMany(cascade = CascadeType.ALL)

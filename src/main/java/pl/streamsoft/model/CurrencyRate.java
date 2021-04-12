@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.ManyToAny;
 
@@ -19,7 +20,7 @@ public class CurrencyRate {
     @Id
     @Column(name = "Id")
     private String id;
-   
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "code")
     private CurrencyInfo currencyInfo;
@@ -30,19 +31,19 @@ public class CurrencyRate {
     private LocalDate dateOfAnnouncedRate;
     @Column(name = "providername")
     private String providerName = "unknown";
-    
+    @Transient
+    private CurrencyCode code;
+
     public CurrencyRate() {
     }
 
     public CurrencyRate(CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
-	this.currencyInfo = new CurrencyInfo(code);
+	this.code = code;
 	this.rateValue = rateValue;
 	this.dateOfAnnouncedRate = localDate;
 	this.id = code.toString() + localDate.toString();
     }
 
-     
-    
     public CurrencyRate(CurrencyInfo currencyInfo, BigDecimal rateValue, LocalDate dateOfAnnouncedRate) {
 	super();
 	this.currencyInfo = currencyInfo;
@@ -52,7 +53,7 @@ public class CurrencyRate {
     }
 
     public String getId() {
-        return id;
+	return id;
     }
 
     public BigDecimal getRateValue() {
@@ -64,15 +65,15 @@ public class CurrencyRate {
     }
 
     public void setRateValue(BigDecimal rateValue) {
-        this.rateValue = rateValue;
+	this.rateValue = rateValue;
     }
 
     public void setDateOfAnnouncedRate(LocalDate dateOfAnnouncedRate) {
-        this.dateOfAnnouncedRate = dateOfAnnouncedRate;
+	this.dateOfAnnouncedRate = dateOfAnnouncedRate;
     }
 
     public void setId(String id) {
-        this.id = id;
+	this.id = id;
     }
 
     public String getProviderName() {
@@ -82,20 +83,38 @@ public class CurrencyRate {
     public void setProviderName(String providerName) {
 	this.providerName = providerName;
     }
-  
+
     public CurrencyInfo getCurrencyRateInfo() {
-        return currencyInfo;
+	return currencyInfo;
     }
 
     public void setCurrencyRateInfo(CurrencyInfo currencyRateInfo) {
-        this.currencyInfo = currencyRateInfo;
+	this.currencyInfo = currencyRateInfo;
+    }
+
+    
+    
+    public CurrencyInfo getCurrencyInfo() {
+        return currencyInfo;
+    }
+
+    public void setCurrencyInfo(CurrencyInfo currencyInfo) {
+        this.currencyInfo = currencyInfo;
+    }
+
+    public CurrencyCode getCode() {
+        return code;
+    }
+
+    public void setCode(CurrencyCode code) {
+        this.code = code;
     }
 
     @Override
     public String toString() {
-	return "CurrencyRate [id=" + id + ", currencyName=" + currencyInfo.getCurrencyName() + ", code=" + currencyInfo.getCode() + ", rateValue="
-		+ rateValue + ", dateOfAnnouncedRate=" + dateOfAnnouncedRate + ", providerName=" + providerName + "]";
+	return "CurrencyRate [id=" + id + ", currencyName=" + currencyInfo.getCurrencyName() + ", code="
+		+ currencyInfo.getCode() + ", rateValue=" + rateValue + ", dateOfAnnouncedRate=" + dateOfAnnouncedRate
+		+ ", providerName=" + providerName + "]";
     }
-    
-    
+
 }

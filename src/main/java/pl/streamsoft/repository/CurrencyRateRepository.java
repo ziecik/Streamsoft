@@ -40,15 +40,27 @@ public class CurrencyRateRepository
     @Override
     public void add(CurrencyRate entity) {
 	beginTransaction();
-	entityManager.persist(entity);
-	CurrencyInfo find2 = new CurrencyInfoRepository().find(entity.getCurrencyRateInfo().getCode());
-	if (find2 != null)
-	    entity.setCurrencyRateInfo(find2);
-		
+
+	CurrencyRate find = entityManager.find(CurrencyRate.class, entity.getId());
+
+	if (find == null) {
+
+	    entityManager.detach(find);
+	    CurrencyCode code = entity.getCode();
+	    CurrencyInfo find2 = new CurrencyInfoRepository().find(code);
+	    List<CurrencyRate> rates = find2.getCurrencyRates();
+	    rates.add(entity);
+
+	    find2.setCurrencyRates(rates);
+	    entityManager.persist(entity);
+
+//	entity.setCurrencyRateInfo(rates);
+
 //	else {
 //	    entityManager.persist(entity);
 //	    entity.setCurrencyRateInfo(find2);
 //	}
+	}
 	closeTransaction();
     }
 
@@ -80,7 +92,7 @@ public class CurrencyRateRepository
 	if (find != null) {
 	    find.setRateValue(entity.getRateValue());
 	} else {
-	   add(entity);
+	    add(entity);
 	}
 	closeTransaction();
     }
