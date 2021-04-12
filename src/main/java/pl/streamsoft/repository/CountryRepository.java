@@ -1,52 +1,60 @@
 package pl.streamsoft.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import pl.streamsoft.model.Country;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyInfo;
 
-public class CurrencyInfoRepository implements Repository<CurrencyInfo, CurrencyCode> {
+public class CountryRepository implements Repository<Country, Long> {
 
     private EntityManagerFactory entityManagerFactory;
     private EntityManager entityManager;
 
-    @Override
-    public void add(CurrencyInfo entity) {
-	beginTransaction();
-	if(
-	entityManager.find(CurrencyInfo.class, entity) != null)
-	entityManager.persist(entity);
-	closeTransaction();
-    }
+    public void add(Country entity, CurrencyCode code) {
+  	beginTransaction();
 
-    @Override
-    public void remove(CurrencyCode id) {
-	beginTransaction();
-	CurrencyInfo find = entityManager.find(CurrencyInfo.class, id);
-	entityManager.remove(find);
-	closeTransaction();
-    }
-
-    @Override
-    public CurrencyInfo find(CurrencyCode id) {
-	beginTransaction();
-	CurrencyInfo find = entityManager.find(CurrencyInfo.class, id);
-	closeTransaction();
-	return find;
-    }
-
-    @Override
-    public void update(CurrencyCode id, CurrencyInfo entity) {
-	beginTransaction();
-	CurrencyInfo find = entityManager.find(CurrencyInfo.class, id);
-	find.setCurrencyName(entity.getCurrencyName());
-	entityManager.persist(find);
-	closeTransaction();
-    }
+  	entityManager.persist(entity);
+  	CurrencyInfo currency = entityManager.find(CurrencyInfo.class, code);
+  	List<CurrencyInfo> currencies = entity.getCurrencies();
+  	currency.getCountries().add(entity);
+  	closeTransaction();
+      }
     
-    
+    @Override
+    public void add(Country entity) {
+	beginTransaction();
+
+	
+	
+	closeTransaction();
+    }
+
+    @Override
+    public void remove(Long id) {
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Country find(Long id) {
+	// TODO Auto-generated m stub
+	return null;
+    }
+
+    @Override
+    public void update(Long id, Country entity) {
+	// TODO Auto-generated method stub
+
+    }
+
+
     private void beginTransaction() {
 	entityManagerFactory = Persistence.createEntityManagerFactory("dbCurrencyConnection");
 	entityManager = entityManagerFactory.createEntityManager();
@@ -58,5 +66,4 @@ public class CurrencyInfoRepository implements Repository<CurrencyInfo, Currency
 	entityManager.close();
 	entityManagerFactory.close();
     }
-
 }

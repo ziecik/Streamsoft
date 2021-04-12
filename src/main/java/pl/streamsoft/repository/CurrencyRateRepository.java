@@ -27,6 +27,7 @@ public class CurrencyRateRepository
     private EntityManager entityManager;
 
     public CurrencyRateRepository() {
+	
     }
 
     @Override
@@ -140,6 +141,7 @@ public class CurrencyRateRepository
 	return currencyRates;
     }
 
+//	#3
     public List<CurrencyRate> find5BestRatesForCurrency(CurrencyCode code) {
 	beginTransaction();
 	String sqlQuery = "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code \r\n"
@@ -156,6 +158,7 @@ public class CurrencyRateRepository
 	return currencyRates;
     }
     
+//	#3
     public List<CurrencyRate> find5BestWorstForCurrency(CurrencyCode code) {
 	beginTransaction();
 	String sqlQuery = "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code \r\n"
