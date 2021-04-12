@@ -10,10 +10,10 @@ public class DC {
 
     public static void convertFromAllCurrencies() {
 	CurrencyConverter currencyConverter = new CurrencyConverter();
-	for (int i = 0; i <5; i++) {
-//	    for (int j = 0; j < CurrencyCode.values().length; j++) {
-		currencyConverter.convertToPLN(new AmountDataToConvert(BigDecimal.TEN, CurrencyCode.EUR, LocalDate.of(2021,4,9).minusDays(i)));
-//	    }
+	for (int i = 0; i <1; i++) {
+	    for (int j = 0; j < CurrencyCode.values().length; j++) {
+		currencyConverter.convertToPLN(new AmountDataToConvert(BigDecimal.TEN, CurrencyCode.values()[j], LocalDate.now().minusDays(i)));
+	    }
 	}
     }
 }

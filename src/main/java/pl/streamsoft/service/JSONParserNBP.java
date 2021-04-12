@@ -28,7 +28,7 @@ public class JSONParserNBP implements StringToObjectParser {
 
 	    BigDecimal rateValue = new BigDecimal(rate.getAsString("mid"));
 	    LocalDate localDate = LocalDate.parse(rate.getAsString("effectiveDate"));
-	    CurrencyRate currencyRate = new CurrencyRate(currencyCode, rateValue, localDate);
+	    CurrencyRate currencyRate = new CurrencyRate(currencyCode, currencyName, rateValue, localDate);
 
 	    return currencyRate;
 	} catch (ParseException e) {

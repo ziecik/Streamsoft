@@ -31,8 +31,6 @@ public class DBQueriesTest {
     @Test
     void tsttConnection() {
 
-	
-
 //	given:	
 	Country gb = setGiveForTest1();
 
@@ -42,8 +40,7 @@ public class DBQueriesTest {
 	TypedQuery<Country> createQuery = entityManager.createQuery(query, Country.class);
 	List<Country> countreis = createQuery.getResultList();
 	Country country = countreis.get(0);
-	
-	
+
 	entityManager.getTransaction().commit();
 	entityManager.close();
 	entityManagerFactory.close();
@@ -53,7 +50,6 @@ public class DBQueriesTest {
 	Assertions.assertThat(country.getCountryName()).isEqualTo(gb.getCountryName());
     }
 
-
     private Country setGiveForTest1() {
 	CurrencyInfo eur = new CurrencyInfo(CurrencyCode.EUR, "euro");
 	CurrencyInfo gbp = new CurrencyInfo(CurrencyCode.GBP, "euro");
@@ -61,53 +57,81 @@ public class DBQueriesTest {
 	Country pl = new Country("Poland");
 	Country es = new Country("Spain");
 	Country gb = new Country("Great Britain");
-	
-	
-	
+
 	entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 	entityManager = entityManagerFactory.createEntityManager();
 	entityManager.getTransaction().begin();
-	
-	
+
 	entityManager.persist(gb);
 	entityManager.persist(pl);
 	entityManager.persist(es);
-	
+
 	entityManager.persist(eur);
 	entityManager.persist(gbp);
-	
+
 	List<Country> countries = new ArrayList<>();
 	countries.add(gb);
 	countries.add(es);
 	countries.add(pl);
-	
+
 	eur.setCountries(countries);
-	
+
 	List<Country> gbOnly = new ArrayList<>();
 	gbOnly.add(gb);
-	
+
 	gbp.setCountries(gbOnly);
-	
-	
-	
+
 	entityManager.getTransaction().commit();
 	entityManager.getTransaction().begin();
 	return gb;
     }
 
-    
+  
     @Test
-    void test2() {
-	
+    void test3() {
 //	given:
-	setGivenForTest2();
+
+//	CurrencyRateRepository currencyRateRepository = new CurrencyRateRepository(persistenceUnitName);
+	CurrencyRate eur1 = new CurrencyRate(CurrencyCode.EUR, "euro", new BigDecimal("4.1234"), LocalDate.now());
+	CurrencyRate eur2 = new CurrencyRate(CurrencyCode.EUR, "euro", new BigDecimal("4.1175"),
+		LocalDate.now().minusDays(1));
+	CurrencyRate eur3 = new CurrencyRate(CurrencyCode.EUR, "euro", new BigDecimal("4.2175"),
+		LocalDate.now().minusDays(2));
+
+	entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
+	entityManager = entityManagerFactory.createEntityManager();
+	entityManager.getTransaction().begin();
+
+	entityManager.persist(eur1);
+
+	CurrencyInfo currencyInfo = new CurrencyInfo(CurrencyCode.EUR, "euro");
+	eur1.setCurrencyInfo(currencyInfo);
+	entityManager.persist(currencyInfo);
+
+	entityManager.getTransaction().commit();
+
+	entityManager.getTransaction().begin();
+
+	CurrencyInfo cruenncyInfo = entityManager.find(CurrencyInfo.class, CurrencyCode.EUR);
+	entityManager.persist(eur2);
+	eur2.setCurrencyInfo(cruenncyInfo);
+	entityManager.getTransaction().commit();
+
+	entityManager.getTransaction().begin();
+	entityManager.persist(eur3);
+	eur3.setCurrencyInfo(cruenncyInfo);
+	entityManager.getTransaction().commit();
+
 	
-//	when:
+//	when:	
+	
+	entityManager.getTransaction().begin();
+	
 	String sqlQuery = "select i.code, i.currencyName, max(c.rateValue)- min(c.rateValue) from CurrencyRate c join CurrencyInfo i on c.currencyInfo = i where dateOfAnnouncedRate between :start and :end  group by i.code order by max(c.rateValue)-min(c.rateValue) desc";
 
-	LocalDate start = LocalDate.now();
-	LocalDate end = start.minusDays(5);
-	
+	LocalDate start = LocalDate.now().minusDays(3);
+	LocalDate end = LocalDate.now();
+
 	TypedQuery<Object[]> query = entityManager.createQuery(sqlQuery, Object[].class);
 	query.setParameter("start", start);
 	query.setParameter("end", end);
@@ -122,64 +146,16 @@ public class DBQueriesTest {
 	}
 
 	RateDifference rateDifference = differences.get(0);
-	
+
+
 	entityManager.getTransaction().commit();
+
 	entityManager.close();
 	entityManagerFactory.close();
 //	then:
-//	Assertions.assertThat(rateDifference.getCode()).isEqualTo(CurrencyCode.EUR);
-	
+
+	Assertions.assertThat(rateDifference.getCode()).isEqualTo(CurrencyCode.EUR);
+	Assertions.assertThat(rateDifference.getDifference()).isEqualTo(new BigDecimal("0.1").setScale(4));
     }
 
-
-    private void setGivenForTest2() {
-	
-	
-	CurrencyInfo eur = new CurrencyInfo(CurrencyCode.EUR, "euro");
-	CurrencyInfo usd = new CurrencyInfo(CurrencyCode.USD, "dollar");
-	
-	CurrencyRate eur1 = new CurrencyRate(eur, new BigDecimal("4.1234"), LocalDate.now());
-	CurrencyRate eur2 = new CurrencyRate(eur, new BigDecimal("4.1500"), LocalDate.now().minusDays(1));
-	CurrencyRate eur3 = new CurrencyRate(eur, new BigDecimal("4.2234"), LocalDate.now().minusDays(2));
-	
-//	
-//	CurrencyRate usd1 = new CurrencyRate("euro", CurrencyCode.USD, new BigDecimal("3.1234"), LocalDate.now());
-//	CurrencyRate usd2 = new CurrencyRate("euro", CurrencyCode.USD, new BigDecimal("3.1700"), LocalDate.now().minusDays(1));
-//	CurrencyRate usd3 = new CurrencyRate("euro", CurrencyCode.USD, new BigDecimal("3.2134"), LocalDate.now().minusDays(2));
-//	CurrencyRate usd4 = new CurrencyRate("euro", CurrencyCode.USD, new BigDecimal("3.4234"), LocalDate.now().minusDays(4));
-//	
-	ArrayList<CurrencyRate> currencyRates = new ArrayList<>();
-	currencyRates.add(eur3);
-	currencyRates.add(eur2);
-	currencyRates.add(eur1);
-	eur.setCurrencyRates(currencyRates);
-	
-	eur1.setCurrencyRateInfo(eur);
-	eur2.setCurrencyRateInfo(eur);
-	eur3.setCurrencyRateInfo(eur);
-//	
-	
-	entityManagerFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
-	entityManager = entityManagerFactory.createEntityManager();
-	entityManager.getTransaction().begin();
-	
-	
-	
-	
-	entityManager.persist(eur1);
-	entityManager.persist(eur2);
-	entityManager.persist(eur3);
-//	
-	
-	entityManager.persist(eur);
-	
-	
-	
-
-//	
-	
-	entityManager.getTransaction().commit();
-	entityManager.getTransaction().begin();
-    }
-    
 }

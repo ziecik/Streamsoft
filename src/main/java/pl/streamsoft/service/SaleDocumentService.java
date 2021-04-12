@@ -20,18 +20,18 @@ public class SaleDocumentService {
     public void insert() {
 
 	
-//	ConvertedAmount convertToPLN = new CurrencyConverter().convertToPLN(new AmountDataToConvert(BigDecimal.TEN, CurrencyCode.EUR, LocalDate.now()));
+	ConvertedAmount convertToPLN = new CurrencyConverter().convertToPLN(new AmountDataToConvert(BigDecimal.TEN, CurrencyCode.EUR, LocalDate.now().minusDays(1)));
 //	ConvertedAmount convertToPLN2 = new CurrencyConverter().convertToPLN(new AmountDataToConvert(BigDecimal.TEN, CurrencyCode.USD, LocalDate.now()));
-	new CurrencyRateRepository().add(new CurrencyRate(CurrencyCode.UAH, new BigDecimal("4.5687"), LocalDate.now()));
+//	new CurrencyRateRepository().add(new CurrencyRate(CurrencyCode.UAH, new BigDecimal("4.5687"), LocalDate.now()));
 	
 	
-//	LocalDate start = LocalDate.of(2000, 1, 1);
-//	LocalDate end = LocalDate.now();
-//	CurrencyRateRepository currencyRateRepository = new CurrencyRateRepository();
+	LocalDate start = LocalDate.of(2000, 1, 1);
+	LocalDate end = LocalDate.now();
+	CurrencyRateRepository currencyRateRepository = new CurrencyRateRepository();
 ////	
-//////	DC.convertFromAllCurrencies();
+//	DC.convertFromAllCurrencies();
 ////	
-//	List<RateDifference> differenceInPeriod = currencyRateRepository.findCurrencyRateWithMaxDifferenceValueBetween(start, end, 3);
+	List<RateDifference> differenceInPeriod = currencyRateRepository.findCurrencyRateWithMaxDifferenceValueBetween(start, end, 3);
 //	List<CurrencyRate> maxVal = currencyRateRepository.findCurrencyRateWithMaxValueBetween(start, end, CurrencyCode.EUR);
 //	List<CurrencyRate> minVal = currencyRateRepository.findCurrencyRateWithMinValueBetween(start, end, CurrencyCode.IDR);
 //	List<CurrencyRate> find5 = currencyRateRepository.find5BestRatesForCurrency(CurrencyCode.EUR);

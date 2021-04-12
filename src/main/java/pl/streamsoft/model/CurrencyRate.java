@@ -33,11 +33,14 @@ public class CurrencyRate {
     private String providerName = "unknown";
     @Transient
     private CurrencyCode code;
+    @Transient
+    private String currencyName;
 
     public CurrencyRate() {
     }
 
-    public CurrencyRate(CurrencyCode code, BigDecimal rateValue, LocalDate localDate) {
+    public CurrencyRate(CurrencyCode code, String currencyName, BigDecimal rateValue, LocalDate localDate) {
+	this.currencyName = currencyName;
 	this.code = code;
 	this.rateValue = rateValue;
 	this.dateOfAnnouncedRate = localDate;
@@ -108,6 +111,16 @@ public class CurrencyRate {
 
     public void setCode(CurrencyCode code) {
         this.code = code;
+    }
+
+    
+    
+    public String getCurrencyName() {
+        return currencyName;
+    }
+
+    public void setCurrencyName(String currencyNamString) {
+        this.currencyName = currencyNamString;
     }
 
     @Override

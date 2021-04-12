@@ -12,6 +12,8 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.hibernate.id.EntityIdentifierNature;
+
 import pl.streamsoft.dto.Period;
 import pl.streamsoft.dto.RateDifference;
 import pl.streamsoft.exception.DataNotFoundException;
@@ -41,26 +43,8 @@ public class CurrencyRateRepository
     public void add(CurrencyRate entity) {
 	beginTransaction();
 
-	CurrencyRate find = entityManager.find(CurrencyRate.class, entity.getId());
-
-	if (find == null) {
-
-	    entityManager.detach(find);
-	    CurrencyCode code = entity.getCode();
-	    CurrencyInfo find2 = new CurrencyInfoRepository().find(code);
-	    List<CurrencyRate> rates = find2.getCurrencyRates();
-	    rates.add(entity);
-
-	    find2.setCurrencyRates(rates);
-	    entityManager.persist(entity);
-
-//	entity.setCurrencyRateInfo(rates);
-
-//	else {
-//	    entityManager.persist(entity);
-//	    entity.setCurrencyRateInfo(find2);
-//	}
-	}
+	addOrUpdate(entity.getId(), entity);
+	
 	closeTransaction();
     }
 
@@ -88,13 +72,30 @@ public class CurrencyRateRepository
     @Override
     public void update(String id, CurrencyRate entity) {
 	beginTransaction();
+	
+	addOrUpdate(id, entity);
+	
+	
+	
+	closeTransaction();
+    }
+
+    public void addOrUpdate(String id, CurrencyRate entity) {
 	CurrencyRate find = entityManager.find(CurrencyRate.class, id);
 	if (find != null) {
 	    find.setRateValue(entity.getRateValue());
 	} else {
-	    add(entity);
+	    entityManager.persist(entity);
 	}
-	closeTransaction();
+	
+	CurrencyInfo cruenncyInfo = entityManager.find(CurrencyInfo.class, entity.getCode());
+	if(cruenncyInfo != null) {
+	    entity.setCurrencyInfo(cruenncyInfo);
+	} else {
+	    CurrencyInfo currencyInfo = new CurrencyInfo(entity.getCode(), entity.getCurrencyName());
+	    entity.setCurrencyInfo(currencyInfo);
+	    entityManager.persist(currencyInfo);
+	}
     }
 
 //	max difference in period
