@@ -74,6 +74,19 @@ public class CountryRepository implements Repository<Country, Long> {
 	closeTransaction();
     }
 
+    public Country findByName(String countryName) {
+	beginTransaction();
+	String sql = "select c from Country c where c.countryName =:countryName";
+	TypedQuery<Country> query = entityManager.createQuery(sql, Country.class);
+	query.setParameter("countryName", countryName);
+	List<Country> countries = query.getResultList();
+	
+	Country country = countries.get(0);
+	closeTransaction();
+	
+	return country;
+    }
+    
     @Override
     public Country find(Long id) {
 	Country country = entityManager.find(Country.class, id);

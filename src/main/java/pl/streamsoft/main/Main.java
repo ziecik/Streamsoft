@@ -32,6 +32,8 @@ public class Main {
 	
 	
 	session.evict(currencyRate);
+	session.detach(entityManager);
+	
 	
 	
 	EntityManager delegate = (EntityManager) session.getDelegate();

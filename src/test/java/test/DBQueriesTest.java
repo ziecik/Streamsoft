@@ -138,4 +138,19 @@ public class DBQueriesTest {
 	countryRepository.add(new Country("Czech", "Prague"));
 	return gb;
     }
+    
+    @Test
+    void should_returnCountryByName() {
+//	given:
+	Country angola = new Country("Angola");
+	countryRepository.add(angola);
+	
+//	when:
+	Country findByName = countryRepository.findByName("Angola");
+	
+//	then:
+	Assertions.assertThat(angola.getCountryName()).isEqualTo(findByName.getCountryName());
+	
+    }
+    
 }
