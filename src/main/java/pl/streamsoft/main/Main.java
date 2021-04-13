@@ -1,32 +1,43 @@
 package pl.streamsoft.main;
 
-import java.util.List;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
-import pl.streamsoft.model.Country;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import org.hibernate.Session;
+
 import pl.streamsoft.model.CurrencyCode;
-import pl.streamsoft.repository.CountryRepository;
-import pl.streamsoft.repository.CurrencyInfoRepository;
+import pl.streamsoft.model.CurrencyRate;
 import pl.streamsoft.service.SaleDocumentService;
 
 public class Main {
 
     public static void main(String[] args) {
-	new SaleDocumentService().insert();
+//	new SaleDocumentService().insert();
 	
-		
+	EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("dbCurrencyConnection");
+	EntityManager entityManager = entityManagerFactory.createEntityManager();
+	Session session = entityManager.unwrap(Session.class);
 	
-//	CurrencyInfoRepository currencyInfoRepository = new CurrencyInfoRepository();
-//	CountryRepository countryRepository = new CountryRepository();	
-//	
-//	countryRepository.add(new Country("USA"));
-//	
-//	countryRepository.addCurrency(81L, CurrencyCode.USD);
+	CurrencyRate currencyRate = new CurrencyRate(CurrencyCode.EUR, "euro", new BigDecimal("4.2135"), LocalDate.of(2000, 1, 1));
+	currencyRate.setCurrencyName("ojro");
 	
-//	List<Country> countriesWithMoreThenOneCurrency = countryRepository.findCountriesWithTwoOrMoreCurrencies();
-//	
-//	countryRepository.add(new Country("Czech", "Prague"),  CurrencyCode.CZK);
-
-//	countryRepository.remove(91L);
+	session.beginTransaction();
+	
+	Serializable s1 = session.save(currencyRate);
+	
+	
+	session.evict(currencyRate);
+	
+	
+	EntityManager delegate = (EntityManager) session.getDelegate();
+	
+	System.out.println(entityManager.equals(delegate));
+	session.flush();
     }
 
 }

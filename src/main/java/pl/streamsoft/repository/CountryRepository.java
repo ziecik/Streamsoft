@@ -7,8 +7,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
-import org.hibernate.Session;
-
 import pl.streamsoft.model.Country;
 import pl.streamsoft.model.CurrencyCode;
 import pl.streamsoft.model.CurrencyInfo;
@@ -37,10 +35,10 @@ public class CountryRepository implements Repository<Country, Long> {
 
     public void add(Country entity, CurrencyCode code) {
   	beginTransaction();
-
   	entityManager.persist(entity);
   	CurrencyInfo currency = entityManager.find(CurrencyInfo.class, code);
-  	List<CurrencyInfo> currencies = entity.getCurrencies();
+//  	List<CurrencyInfo> currencies = entity.getCurrencies();
+  	
   	currency.getCountries().add(entity);
   	closeTransaction();
       }

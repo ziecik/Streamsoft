@@ -12,8 +12,6 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import org.hibernate.id.EntityIdentifierNature;
-
 import pl.streamsoft.dto.Period;
 import pl.streamsoft.dto.RateDifference;
 import pl.streamsoft.exception.DataNotFoundException;
@@ -44,7 +42,7 @@ public class CurrencyRateRepository
 	beginTransaction();
 
 	addOrUpdate(entity.getId(), entity);
-	
+
 	closeTransaction();
     }
 
@@ -72,11 +70,9 @@ public class CurrencyRateRepository
     @Override
     public void update(String id, CurrencyRate entity) {
 	beginTransaction();
-	
+
 	addOrUpdate(id, entity);
-	
-	
-	
+
 	closeTransaction();
     }
 
@@ -87,9 +83,9 @@ public class CurrencyRateRepository
 	} else {
 	    entityManager.persist(entity);
 	}
-	
+
 	CurrencyInfo cruenncyInfo = entityManager.find(CurrencyInfo.class, entity.getCode());
-	if(cruenncyInfo != null) {
+	if (cruenncyInfo != null) {
 	    entity.setCurrencyInfo(cruenncyInfo);
 	} else {
 	    CurrencyInfo currencyInfo = new CurrencyInfo(entity.getCode(), entity.getCurrencyName());
@@ -180,7 +176,7 @@ public class CurrencyRateRepository
     }
 
 //	#3
-    public List<CurrencyRate> find5BestWorstForCurrency(CurrencyCode code) {
+    public List<CurrencyRate> find5WorstForCurrency(CurrencyCode code) {
 	beginTransaction();
 	String sqlQuery = "select c from CurrencyRate c join fetch c.currencyInfo i where c.currencyInfo.code = :code \r\n"
 		+ "  order by ratevalue";

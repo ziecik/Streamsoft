@@ -22,30 +22,15 @@ public class Country {
     private List<CurrencyInfo> currencies;
     
     private String capitalCity;
-
-    
     
     public Country() {
 	super();
     }
-
-    
     
     public Country(String countryName) {
 	super();
 	this.countryName = countryName;
     }
-
-
-
-    public Country(String countryName, List<CurrencyInfo> currencies) {
-	super();
-	this.countryName = countryName;
-	this.currencies = currencies;
-    }
-
-    
-    
     
     public Country(String countryName, String capitalCity) {
 	super();
@@ -53,19 +38,13 @@ public class Country {
 	this.capitalCity = capitalCity;
     }
 
-
-
     public Long getId() {
         return id;
     }
 
-
-
     public void setId(Long id) {
         this.id = id;
     }
-
-
 
     public String getCountryName() {
 	return countryName;
@@ -83,10 +62,17 @@ public class Country {
 	this.currencies = currencies;
     }
 
-
-
     public void addCurrency(CurrencyInfo currencyInfo) {
 	this.currencies.add(currencyInfo);
     }
 
+    public String getCapitalCity() {
+        return capitalCity;
+    }
+
+    public void setCapitalCity(String capitalCity) {
+        this.capitalCity = capitalCity;
+    }
+
+    
 }

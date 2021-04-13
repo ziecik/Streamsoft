@@ -12,12 +12,12 @@
 		
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" /> <!-- DB Driver -->
-            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test" /> <!-- BD Mane -->
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1" /> <!-- BD Mane -->
             <property name="javax.persistence.jdbc.user" value="sa" /> <!-- DB User -->
             <property name="javax.persistence.jdbc.password" value="" /> <!-- DB Password -->
 
 	   		<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/> <!-- DB Dialect -->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop" /> <!-- create / create-drop / update -->
+            <property name="hibernate.hbm2ddl.auto" value="update" /> <!-- create / create-drop / update -->
             
             <property name="hibernate.show_sql" value="true" /> <!-- Show SQL in console -->
             <property name="hibernate.format_sql" value="false" /> <!-- Show SQL formatted -->
