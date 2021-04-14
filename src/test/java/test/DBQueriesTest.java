@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.Test;
 
@@ -21,8 +18,8 @@ import pl.streamsoft.repository.CurrencyRateRepository;
 
 public class DBQueriesTest {
 
-    EntityManagerFactory entityManagerFactory;
-    EntityManager entityManager;
+//    EntityManagerFactory entityManagerFactory;
+//    EntityManager entityManager;
     String persistenceUnitName = "dbH2Test";
 
     CurrencyRateRepository currencyRateRepository = new CurrencyRateRepository(persistenceUnitName);
@@ -87,7 +84,6 @@ public class DBQueriesTest {
 	
 //	then:
 	Assertions.assertThat(minCurrencyRate.get(0).getRateValue()).isEqualTo(minRate);
-	Assertions.assertThat(minCurrencyRate.get(0).getRateValue()).isEqualTo(minRate);
     }
 
     //	#3
@@ -120,22 +116,22 @@ public class DBQueriesTest {
 
     public Country setGiven2() {
 	CurrencyInfo eur = new CurrencyInfo(CurrencyCode.EUR, "euro");
-	CurrencyInfo gbp = new CurrencyInfo(CurrencyCode.GBP, "euro");
+	CurrencyInfo gbp = new CurrencyInfo(CurrencyCode.GBP, "funt");
 
 	Country pl = new Country("Poland");
-	Country es = new Country("Spain");
+	Country al = new Country("Albania");
 	Country gb = new Country("Great Britain");
 
 	currencyInfoRepository.add(gbp);
 	currencyInfoRepository.add(eur);
 
 	countryRepository.add(pl, CurrencyCode.EUR);
-	countryRepository.add(es, CurrencyCode.EUR);
+	countryRepository.add(al, CurrencyCode.EUR);
 	countryRepository.add(gb, CurrencyCode.GBP);
 
-	countryRepository.addCurrency(3L, CurrencyCode.EUR);
+	countryRepository.addCurrency("Great Britain", CurrencyCode.EUR);
 
-	countryRepository.add(new Country("Czech", "Prague"));
+//	countryRepository.add(new Country("Czech", "Prague"));
 	return gb;
     }
     
